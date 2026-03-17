@@ -69,6 +69,41 @@ function useMouseParallax(factor = 0.02) {
   return pos
 }
 
+/* 3D scroll-driven tilt: returns { rotateX, rotateY, progress } based on element's viewport position */
+function useScrollTilt(ref, { maxTilt = 12, axis = 'both' } = {}) {
+  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0, progress: 0 })
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    let ticking = false
+
+    const update = () => {
+      const rect = el.getBoundingClientRect()
+      const vh = window.innerHeight
+      // progress: 0 = just entering bottom, 0.5 = centered, 1 = exiting top
+      const center = rect.top + rect.height / 2
+      const progress = Math.max(0, Math.min(1, 1 - center / vh))
+      // Map progress to tilt: enters tilted, straightens at center, tilts opposite as exits
+      const normalized = (progress - 0.5) * 2 // -1 to 1
+      const rx = axis === 'y' ? 0 : -normalized * maxTilt
+      const ry = axis === 'x' ? 0 : normalized * (maxTilt * 0.4)
+      setTilt({ rotateX: rx, rotateY: ry, progress })
+      ticking = false
+    }
+
+    const onScroll = () => {
+      if (!ticking) { requestAnimationFrame(update); ticking = true }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    update()
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [ref, maxTilt, axis])
+
+  return tilt
+}
+
 /* ━━━ PRIMITIVES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 function Reveal({ children, className = '', delay = 0, as: Tag = 'div' }) {
@@ -88,6 +123,25 @@ function GlassCard({ children, className = '', hover = true, glow, ...props }) {
   return (
     <div className={`glass ${hover ? 'glass-hover' : ''} ${glow ? `glass-glow-${glow}` : ''} ${className}`} {...props}>
       {children}
+    </div>
+  )
+}
+
+/* 3D Tilt wrapper — applies perspective + scroll-driven rotation */
+function Tilt3D({ children, className = '', maxTilt = 12, axis = 'both' }) {
+  const ref = useRef(null)
+  const { rotateX, rotateY } = useScrollTilt(ref, { maxTilt, axis })
+
+  return (
+    <div className={`tilt-3d-wrapper ${className}`} ref={ref}>
+      <div
+        className="tilt-3d-inner"
+        style={{
+          transform: `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+        }}
+      >
+        {children}
+      </div>
     </div>
   )
 }
@@ -112,6 +166,43 @@ function ScrollProgress() {
   const max = typeof document !== 'undefined' ? document.documentElement.scrollHeight - window.innerHeight : 1
   const progress = max > 0 ? y / max : 0
   return <div className="scroll-progress" style={{ transform: `scaleX(${progress})` }} />
+}
+
+/* ━━━ FLOATING PARTICLES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+function FloatingParticles() {
+  const particles = useMemo(() =>
+    Array.from({ length: 20 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: 2 + Math.random() * 3,
+      duration: 15 + Math.random() * 20,
+      delay: Math.random() * -20,
+      opacity: 0.08 + Math.random() * 0.12,
+    })),
+    []
+  )
+
+  return (
+    <div className="particles" aria-hidden="true">
+      {particles.map(p => (
+        <div
+          key={p.id}
+          className="particle"
+          style={{
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            width: `${p.size}px`,
+            height: `${p.size}px`,
+            opacity: p.opacity,
+            animationDuration: `${p.duration}s`,
+            animationDelay: `${p.delay}s`,
+          }}
+        />
+      ))}
+    </div>
+  )
 }
 
 /* ━━━ NAV ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -158,6 +249,8 @@ function Hero() {
   const opacity = Math.max(0, 1 - y / 600)
   const scale = 1 + y * 0.0003
   const phoneY = y * 0.15
+  const phoneRotateX = 8 - y * 0.02
+  const phoneRotateY = -2 + y * 0.005
 
   return (
     <section className="hero">
@@ -189,9 +282,9 @@ function Hero() {
         </div>
       </div>
 
-      {/* 3D Phone Mockup */}
+      {/* 3D Phone Mockup — scroll-driven rotation */}
       <div className="hero-phone-wrapper" style={{ transform: `translateY(${phoneY}px)` }}>
-        <div className="phone-3d">
+        <div className="phone-3d" style={{ transform: `rotateX(${Math.max(-5, phoneRotateX)}deg) rotateY(${Math.min(5, phoneRotateY)}deg)` }}>
           <div className="phone-glow" />
           <div className="phone-frame">
             <div className="phone-notch" />
@@ -312,37 +405,7 @@ function SocialProof() {
   )
 }
 
-/* ━━━ MARQUEE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-function Marquee() {
-  const items = [
-    'PERFORMANCE FOCUSED',
-    'AI-POWERED COACHING',
-    'EXECUTIVE-LEVEL PRIVACY',
-    'SITUATION PLAYBOOK',
-    'DAILY PROTOCOL',
-    '22 MILESTONES',
-    'APPLE HEALTH SYNC',
-    'ZERO DATA SHARING',
-    'BUILT FOR PROFESSIONAL MEN',
-    'FACE ID PROTECTED',
-  ]
-
-  return (
-    <div className="marquee-wrap">
-      <div className="marquee-track">
-        {[...items, ...items].map((item, i) => (
-          <span key={i} className="marquee-item">
-            <span className="marquee-dot" />
-            {item}
-          </span>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-/* ━━━ FEATURES BENTO GRID ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ━━━ FEATURES BENTO GRID — with 3D SCROLL TILT ━━━━━ */
 
 function Features() {
   return (
@@ -358,8 +421,8 @@ function Features() {
         </Reveal>
 
         <div className="bento">
-          {/* Large feature — Scoreboard */}
-          <Reveal className="bento-item bento-lg" delay={0}>
+          {/* Large feature — Scoreboard with 3D tilt */}
+          <Tilt3D className="bento-item bento-lg" maxTilt={8}>
             <GlassCard className="bento-card" glow="primary">
               <div className="bento-card-content">
                 <span className="bento-icon">📊</span>
@@ -375,10 +438,10 @@ function Features() {
                 <div className="mini-stat-card accent"><span className="mini-val">84,240</span><span className="mini-label">Calories</span></div>
               </div>
             </GlassCard>
-          </Reveal>
+          </Tilt3D>
 
-          {/* Medium — AI Coach */}
-          <Reveal className="bento-item bento-md" delay={100}>
+          {/* Medium — AI Coach with 3D tilt */}
+          <Tilt3D className="bento-item bento-md" maxTilt={10}>
             <GlassCard className="bento-card" glow="accent">
               <span className="bento-icon">🧠</span>
               <h3 className="bento-title">AI Performance Coach</h3>
@@ -386,18 +449,34 @@ function Features() {
                 An executive-level sobriety coach, 24/7. Understands business culture,
                 high-pressure environments, and client-facing roles.
               </p>
-              <div className="bento-tag">Coming in v1</div>
+              <div className="bento-tag">Powered by AI</div>
             </GlassCard>
-          </Reveal>
+          </Tilt3D>
 
-          {/* Medium — Milestones */}
-          <Reveal className="bento-item bento-md" delay={200}>
+          {/* Medium — Privacy / Vault (merged) with 3D tilt */}
+          <Tilt3D className="bento-item bento-md" maxTilt={10}>
+            <GlassCard className="bento-card">
+              <span className="bento-icon">🔐</span>
+              <h3 className="bento-title">The Vault</h3>
+              <p className="bento-desc">
+                Face ID lock. Disguised icon. Zero social features. No data sharing.
+                Built for men whose biggest concern is discretion.
+              </p>
+              <div className="bento-privacy-row">
+                {['Face ID', 'Encrypted', 'No Social', 'GDPR'].map((item, i) => (
+                  <span key={i} className="bento-privacy-tag">{item}</span>
+                ))}
+              </div>
+            </GlassCard>
+          </Tilt3D>
+
+          {/* Small — Milestones */}
+          <Tilt3D className="bento-item bento-sm" maxTilt={14}>
             <GlassCard className="bento-card">
               <span className="bento-icon">🏆</span>
               <h3 className="bento-title">22 Milestones</h3>
               <p className="bento-desc">
-                From 24 hours to 5 years. Each one a marker of who you're becoming.
-                Earn them. Collect them.
+                From 24 hours to 5 years. Earn them. Collect them.
               </p>
               <div className="bento-milestone-row">
                 {['24h', '72h', '1w', '1m', '3m', '6m', '1y'].map((m, i) => (
@@ -405,61 +484,30 @@ function Features() {
                 ))}
               </div>
             </GlassCard>
-          </Reveal>
+          </Tilt3D>
 
           {/* Small — Protocol */}
-          <Reveal className="bento-item bento-sm" delay={150}>
+          <Tilt3D className="bento-item bento-sm" maxTilt={14}>
             <GlassCard className="bento-card">
               <span className="bento-icon">✅</span>
               <h3 className="bento-title">Daily Protocol</h3>
               <p className="bento-desc">
-                Morning breathwork. Midday check-in. Evening debrief. Track streaks from Bronze to Platinum.
+                Morning. Midday. Evening. Track streaks from Bronze to Platinum.
               </p>
             </GlassCard>
-          </Reveal>
+          </Tilt3D>
 
           {/* Small — Debrief */}
-          <Reveal className="bento-item bento-sm" delay={250}>
+          <Tilt3D className="bento-item bento-sm" maxTilt={14}>
             <GlassCard className="bento-card">
               <span className="bento-icon">📝</span>
-              <h3 className="bento-title">Daily Debrief</h3>
+              <h3 className="bento-title">Performance Log</h3>
               <p className="bento-desc">
-                Rate mood, energy, productivity. Track trends. Not a feelings journal — a performance log.
+                Rate mood, energy, productivity. Not a journal — a performance log.
               </p>
             </GlassCard>
-          </Reveal>
-
-          {/* Small — Content */}
-          <Reveal className="bento-item bento-sm" delay={350}>
-            <GlassCard className="bento-card">
-              <span className="bento-icon">📚</span>
-              <h3 className="bento-title">Content Library</h3>
-              <p className="bento-desc">
-                Neuroscience of alcohol. Leadership without drinking. Success stories from executives.
-              </p>
-            </GlassCard>
-          </Reveal>
+          </Tilt3D>
         </div>
-      </div>
-    </section>
-  )
-}
-
-/* ━━━ BIG STAT (Apple-style) ━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-function BigStat() {
-  const [ref, inView] = useInView({ threshold: 0.3 })
-  const num = useCountUp(35, 2500, inView)
-
-  return (
-    <section ref={ref} className={`bigstat ${inView ? 'bigstat-in' : ''}`}>
-      <div className="bigstat-inner">
-        <span className="bigstat-num">&pound;{num}bn</span>
-        <p className="bigstat-text">
-          The annual cost of alcohol to UK employers.<br />
-          Absenteeism. Lost productivity. <em>Poor decisions.</em>
-        </p>
-        <p className="bigstat-source">Source: Institute of Alcohol Studies, UK Government Data</p>
       </div>
     </section>
   )
@@ -474,7 +522,7 @@ function SavingsCalculator() {
 
   const yearlyMoney = weeklySpend * 52
   const yearlyHours = weeklyHours * 52
-  const yearlyCalories = Math.round(weeklySpend / 5 * 180 * 52) // rough: £5/drink, 180cal/drink
+  const yearlyCalories = Math.round(weeklySpend / 5 * 180 * 52)
   const yearlyDays = Math.round(yearlyHours / 24)
 
   return (
@@ -566,7 +614,7 @@ function SavingsCalculator() {
   )
 }
 
-/* ━━━ BEFORE / AFTER ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ━━━ BEFORE / AFTER with 3D TILT ━━━━━━━━━━━━━━━━━━━ */
 
 function Transformation() {
   return (
@@ -580,7 +628,7 @@ function Transformation() {
         </Reveal>
 
         <div className="transform-grid">
-          <Reveal delay={0}>
+          <Tilt3D maxTilt={10} axis="x">
             <GlassCard className="transform-card transform-before" hover={false}>
               <h4 className="transform-card-title">With Alcohol</h4>
               <ul className="transform-list">
@@ -592,9 +640,9 @@ function Transformation() {
                 <li><span className="transform-x">✕</span> Extra 15kg you can't shift</li>
               </ul>
             </GlassCard>
-          </Reveal>
+          </Tilt3D>
 
-          <Reveal delay={200}>
+          <Tilt3D maxTilt={10} axis="x">
             <GlassCard className="transform-card transform-after" glow="primary" hover={false}>
               <h4 className="transform-card-title transform-title-glow">Without Alcohol</h4>
               <ul className="transform-list">
@@ -606,148 +654,43 @@ function Transformation() {
                 <li><span className="transform-check">✓</span> Lean, energised, unstoppable</li>
               </ul>
             </GlassCard>
-          </Reveal>
+          </Tilt3D>
         </div>
       </div>
     </section>
   )
 }
 
-/* ━━━ SECOND BIG STAT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-function BigStat2() {
-  const [ref, inView] = useInView({ threshold: 0.3 })
-  const num = useCountUp(400, 2000, inView)
-
-  return (
-    <section ref={ref} className={`bigstat bigstat-2 ${inView ? 'bigstat-in' : ''}`}>
-      <div className="bigstat-inner">
-        <span className="bigstat-num">{num}M</span>
-        <p className="bigstat-text">
-          people worldwide have an alcohol use disorder.<br />
-          Only <em>10% ever seek help.</em> You're already ahead.
-        </p>
-        <p className="bigstat-source">Source: World Health Organization, Global Alcohol Report</p>
-      </div>
-    </section>
-  )
-}
-
-/* ━━━ FLOATING PARTICLES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-function FloatingParticles() {
-  const particles = useMemo(() =>
-    Array.from({ length: 30 }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: 2 + Math.random() * 3,
-      duration: 15 + Math.random() * 20,
-      delay: Math.random() * -20,
-      opacity: 0.1 + Math.random() * 0.2,
-    })),
-    []
-  )
-
-  return (
-    <div className="particles" aria-hidden="true">
-      {particles.map(p => (
-        <div
-          key={p.id}
-          className="particle"
-          style={{
-            left: `${p.x}%`,
-            top: `${p.y}%`,
-            width: `${p.size}px`,
-            height: `${p.size}px`,
-            opacity: p.opacity,
-            animationDuration: `${p.duration}s`,
-            animationDelay: `${p.delay}s`,
-          }}
-        />
-      ))}
-    </div>
-  )
-}
-
-/* ━━━ HORIZONTAL SCROLL SHOWCASE ━━━━━━━━━━━━━━━━━━━━ */
-
-function FeatureShowcase() {
-  const scrollRef = useRef(null)
-  const [ref, inView] = useInView({ threshold: 0.1 })
-
-  const features = [
-    {
-      title: 'Live Scoreboard',
-      desc: 'Real-time counter showing days, hours, and minutes. Money saved. Calories avoided. Hours reclaimed. Your performance dashboard.',
-      gradient: 'linear-gradient(135deg, #4A90D9 0%, #2563EB 100%)',
-      stat: '247 days',
-    },
-    {
-      title: 'Situation Playbook',
-      desc: 'Pre-built strategies for client dinners, networking events, stag dos, business travel. What to say, what to order, how to exit.',
-      gradient: 'linear-gradient(135deg, #C9A84C 0%, #D97706 100%)',
-      stat: '6 scenarios',
-    },
-    {
-      title: 'AI Performance Coach',
-      desc: 'An executive-level coach who understands boardrooms and business culture. Available 24/7. Never suggests moderation.',
-      gradient: 'linear-gradient(135deg, #30D158 0%, #10B981 100%)',
-      stat: 'Always on',
-    },
-    {
-      title: 'Daily Protocol',
-      desc: 'Morning breathwork. Midday check-in. Evening debrief. Build a streak from Bronze to Platinum. Track what winners track.',
-      gradient: 'linear-gradient(135deg, #FF6B6B 0%, #EE5A24 100%)',
-      stat: '3x daily',
-    },
-    {
-      title: 'The Vault',
-      desc: 'Face ID lock. Disguised app icon. Zero social features. No data sharing. Built for men whose biggest concern is discretion.',
-      gradient: 'linear-gradient(135deg, #a855f7 0%, #7C3AED 100%)',
-      stat: '100% private',
-    },
-  ]
-
-  return (
-    <section ref={ref} className={`showcase ${inView ? 'showcase-in' : ''}`}>
-      <Reveal className="showcase-header">
-        <span className="section-eyebrow">DEEP DIVE</span>
-        <h2 className="section-heading" style={{ textAlign: 'center' }}>
-          Built with <span className="text-gradient">obsessive detail.</span>
-        </h2>
-      </Reveal>
-
-      <div className="showcase-scroll" ref={scrollRef}>
-        <div className="showcase-track">
-          {features.map((f, i) => (
-            <div key={i} className="showcase-card">
-              <div className="showcase-card-accent" style={{ background: f.gradient }} />
-              <div className="showcase-card-body">
-                <span className="showcase-stat" style={{ background: f.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                  {f.stat}
-                </span>
-                <h3 className="showcase-card-title">{f.title}</h3>
-                <p className="showcase-card-desc">{f.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-/* ━━━ PLAYBOOK ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ━━━ INTERACTIVE PLAYBOOK ━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 function Playbook() {
+  const [expanded, setExpanded] = useState(null)
+
   const scenarios = [
-    { icon: '🍷', title: 'Client Dinner', sub: 'Everyone is drinking. You need to close the deal.' },
-    { icon: '🍺', title: 'Friday Drinks', sub: 'The team heads to the pub. You\'re expected.' },
-    { icon: '🥂', title: 'Networking Event', sub: 'Open bar. New contacts. High pressure.' },
-    { icon: '✈️', title: 'Business Class', sub: 'Free drinks trolley. 8-hour flight.' },
-    { icon: '😤', title: '"I Deserve a Drink"', sub: 'Bad deal. Bad day. The old voice returns.' },
-    { icon: '🎉', title: 'The Stag Do', sub: 'The big trip. All eyes on you.' },
+    {
+      icon: '🍷', title: 'Client Dinner', sub: 'Everyone is drinking. You need to close the deal.',
+      strategy: 'Arrive 10 minutes early. Order sparkling water with lime — looks like a G&T. When wine comes: "I\'m driving tonight." Focus on being the sharpest closer at the table. You\'ll outperform everyone after their third glass.',
+    },
+    {
+      icon: '🍺', title: 'Friday Drinks', sub: 'The team heads to the pub. You\'re expected.',
+      strategy: 'Show up for 45 minutes. Hold a tonic water. Steer conversations. Be the one who remembers the jokes on Monday. Leave with: "Early start tomorrow — big one." Nobody questions the guy who\'s winning.',
+    },
+    {
+      icon: '🥂', title: 'Networking Event', sub: 'Open bar. New contacts. High pressure.',
+      strategy: 'Get a glass of sparkling water first thing. Hold it visibly. Focus on collecting 3 quality contacts, not working the room drunk. You\'ll be the only person who follows up the next morning. That\'s the edge.',
+    },
+    {
+      icon: '✈️', title: 'Business Class', sub: 'Free drinks trolley. 8-hour flight.',
+      strategy: 'Noise-cancelling headphones on. Order espresso and water. Use the hours: read, plan, work. Land fresh while everyone else lands hungover. This is 8 hours of compound advantage.',
+    },
+    {
+      icon: '😤', title: '"I Deserve a Drink"', sub: 'Bad deal. Bad day. The old voice returns.',
+      strategy: 'That voice is your limbic system, not your rational mind. Counter: "I deserve to wake up sharp tomorrow." Hit the gym, cold shower, debrief in the app. The craving passes in 20 minutes. The regret lasts days.',
+    },
+    {
+      icon: '🎉', title: 'The Stag Do', sub: 'The big trip. All eyes on you.',
+      strategy: 'Tell 1-2 close mates beforehand. They\'ll cover for you. Volunteer to be the designated driver/organiser. Be the one with the stories, the photos, the energy. Nobody remembers who drank what — they remember who brought the energy.',
+    },
   ]
 
   return (
@@ -759,62 +702,38 @@ function Playbook() {
             Every scenario.<br />
             <span className="text-gradient">A strategy ready.</span>
           </h2>
-          <p className="section-sub">What to say. What to order. How to handle questions. How to exit. Pre-built plans for every situation professional men face.</p>
+          <p className="section-sub">Tap any situation. Get your game plan.</p>
         </Reveal>
 
         <div className="playbook-grid">
           {scenarios.map((s, i) => (
-            <Reveal key={i} delay={i * 80}>
-              <GlassCard className="playbook-card">
-                <span className="playbook-icon">{s.icon}</span>
-                <div className="playbook-text">
-                  <h4 className="playbook-title">{s.title}</h4>
-                  <p className="playbook-sub">{s.sub}</p>
-                </div>
-                <svg className="playbook-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M5 10h10M11 6l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </GlassCard>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-/* ━━━ HOW IT WORKS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-function HowItWorks() {
-  const steps = [
-    { num: '01', title: 'Download & Set Your Date', desc: 'Create your private account. Set your sobriety start date. No social connections required.' },
-    { num: '02', title: 'Build Your Protocol', desc: 'Customise your daily routine — morning, midday, evening. Start tracking streaks from day one.' },
-    { num: '03', title: 'Face Any Situation', desc: 'Open the Playbook before any event. Get a strategy for what to say, order, and how to handle questions.' },
-    { num: '04', title: 'Watch Your Edge Compound', desc: 'Track money saved, hours reclaimed, calories avoided. See your performance metrics climb.' },
-  ]
-
-  return (
-    <section className="how-it-works">
-      <div className="hiw-inner">
-        <Reveal>
-          <span className="section-eyebrow">HOW IT WORKS</span>
-          <h2 className="section-heading" style={{ textAlign: 'center' }}>
-            Four steps to <span className="text-gradient">your edge.</span>
-          </h2>
-        </Reveal>
-
-        <div className="hiw-steps">
-          {steps.map((step, i) => (
-            <Reveal key={i} delay={i * 120} className="hiw-step">
-              <div className="hiw-num-wrap">
-                <span className="hiw-num">{step.num}</span>
-                {i < steps.length - 1 && <div className="hiw-connector" />}
+            <Tilt3D key={i} className="playbook-tilt" maxTilt={expanded === i ? 0 : 8}>
+              <div
+                className={`playbook-card-interactive ${expanded === i ? 'playbook-expanded' : ''}`}
+                onClick={() => setExpanded(expanded === i ? null : i)}
+              >
+                <GlassCard className="playbook-card" hover={expanded !== i}>
+                  <div className="playbook-card-front">
+                    <span className="playbook-icon">{s.icon}</span>
+                    <div className="playbook-text">
+                      <h4 className="playbook-title">{s.title}</h4>
+                      <p className="playbook-sub">{s.sub}</p>
+                    </div>
+                    <div className={`playbook-expand-icon ${expanded === i ? 'playbook-expand-open' : ''}`}>
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 4v12M4 10h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="playbook-strategy">
+                    <div className="playbook-strategy-inner">
+                      <span className="playbook-strategy-label">YOUR GAME PLAN</span>
+                      <p className="playbook-strategy-text">{s.strategy}</p>
+                    </div>
+                  </div>
+                </GlassCard>
               </div>
-              <div className="hiw-content">
-                <h4 className="hiw-title">{step.title}</h4>
-                <p className="hiw-desc">{step.desc}</p>
-              </div>
-            </Reveal>
+            </Tilt3D>
           ))}
         </div>
       </div>
@@ -826,7 +745,7 @@ function HowItWorks() {
 
 function CoachSection() {
   const [ref, inView] = useInView({ threshold: 0.2 })
-  const [phase, setPhase] = useState(0) // 0=idle, 1=user msg, 2=typing, 3=ai msg
+  const [phase, setPhase] = useState(0)
 
   useEffect(() => {
     if (!inView) return
@@ -857,7 +776,7 @@ function CoachSection() {
           </ul>
         </Reveal>
 
-        <div className="coach-right">
+        <Tilt3D maxTilt={6} className="coach-right">
           <div className="coach-chat-frame">
             <div className="coach-chat-bar">
               <div className="coach-chat-dot" /><div className="coach-chat-dot" /><div className="coach-chat-dot" />
@@ -877,51 +796,13 @@ function CoachSection() {
               </div>
             </div>
           </div>
-        </div>
+        </Tilt3D>
       </div>
     </section>
   )
 }
 
-/* ━━━ PRIVACY / VAULT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-function Vault() {
-  const items = [
-    { icon: '🔐', title: 'Face ID Lock', desc: 'Biometric authentication required every time.' },
-    { icon: '🎭', title: 'Disguised Icon', desc: 'Looks like a utility app. No one will know.' },
-    { icon: '🚫', title: 'No Social', desc: 'No forums. No profiles. No community. Just you.' },
-    { icon: '🛡️', title: 'Zero Data Sharing', desc: 'Never sold. Never shared. Never aggregated.' },
-  ]
-
-  return (
-    <section className="vault" id="privacy">
-      <div className="vault-inner">
-        <Reveal className="vault-header">
-          <span className="section-eyebrow">THE VAULT</span>
-          <h2 className="section-heading">
-            What happens in the app<br />
-            <span className="text-gradient">stays in the app.</span>
-          </h2>
-          <p className="section-sub">Built for men whose biggest concern is discretion.</p>
-        </Reveal>
-
-        <div className="vault-grid">
-          {items.map((item, i) => (
-            <Reveal key={i} delay={i * 100}>
-              <GlassCard className="vault-card">
-                <span className="vault-icon">{item.icon}</span>
-                <h4 className="vault-title">{item.title}</h4>
-                <p className="vault-desc">{item.desc}</p>
-              </GlassCard>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-/* ━━━ TESTIMONIALS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ━━━ TESTIMONIALS with 3D TILT ━━━━━━━━━━━━━━━━━━━━━ */
 
 function Testimonials() {
   const quotes = [
@@ -957,7 +838,7 @@ function Testimonials() {
 
         <div className="testimonials-grid">
           {quotes.map((q, i) => (
-            <Reveal key={i} delay={i * 120}>
+            <Tilt3D key={i} maxTilt={10}>
               <GlassCard className="testimonial-card">
                 <div className="testimonial-stars">{'★'.repeat(5)}</div>
                 <p className="testimonial-text">"{q.text}"</p>
@@ -973,7 +854,7 @@ function Testimonials() {
                   </div>
                 </div>
               </GlassCard>
-            </Reveal>
+            </Tilt3D>
           ))}
         </div>
       </div>
@@ -993,9 +874,10 @@ function Pricing() {
     },
     {
       name: 'Premium',
-      price: '4.99',
+      price: '9.99',
       period: '/month',
-      annual: '59.88/year',
+      annual: '95.90',
+      annualSave: '20%',
       featured: true,
       features: ['Everything in Free', 'AI Performance Coach', 'Situation Playbook', 'Full debrief history', 'Advanced stats + trends', 'Content library'],
     },
@@ -1003,6 +885,8 @@ function Pricing() {
       name: 'Coaching',
       price: '149',
       period: '/month',
+      annual: '1,430.40',
+      annualSave: '20%',
       badge: 'COMING SOON',
       features: ['Everything in Premium', '1-to-1 human coaching', 'Former executive mentor', 'Weekly video calls', 'Priority support'],
     },
@@ -1021,7 +905,7 @@ function Pricing() {
 
         <div className="pricing-grid">
           {tiers.map((tier, i) => (
-            <Reveal key={i} delay={i * 120}>
+            <Tilt3D key={i} maxTilt={6}>
               <GlassCard className={`pricing-card ${tier.featured ? 'pricing-featured gradient-border' : ''}`} hover={false}>
                 {tier.featured && <div className="pricing-glow" />}
                 {tier.badge && <span className="pricing-badge-tag">{tier.badge}</span>}
@@ -1031,7 +915,12 @@ function Pricing() {
                   <span className="pricing-value">{tier.price}</span>
                   <span className="pricing-interval">{tier.period}</span>
                 </div>
-                {tier.annual && <p className="pricing-annual">&pound;{tier.annual}</p>}
+                {tier.annual && (
+                  <p className="pricing-annual">
+                    &pound;{tier.annual}/year
+                    {tier.annualSave && <span className="pricing-save">Save {tier.annualSave}</span>}
+                  </p>
+                )}
                 <ul className="pricing-list">
                   {tier.features.map((f, j) => (
                     <li key={j}>
@@ -1044,6 +933,55 @@ function Pricing() {
                   <a href="#waitlist" className="btn btn-primary btn-full">Start Free Trial</a>
                 )}
               </GlassCard>
+            </Tilt3D>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ━━━ FAQ ACCORDION ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+function FAQ() {
+  const [open, setOpen] = useState(null)
+
+  const faqs = [
+    { q: 'Is this app only for people with alcohol addiction?', a: 'No. Success & Sobriety is for any professional man who\'s decided alcohol no longer serves his goals. Whether you\'re cutting back, going fully sober, or just curious about the edge sobriety gives — this app meets you where you are.' },
+    { q: 'Will anyone know I\'m using this app?', a: 'Absolutely not. The app uses a disguised icon, requires Face ID to open, has no social features, and shares zero data with anyone. It\'s designed from the ground up for men who need complete discretion.' },
+    { q: 'How is the AI Coach different from ChatGPT?', a: 'Our coach is purpose-built for sobriety in professional contexts. It understands business culture, client entertainment, and corporate pressure. It\'s hardcoded to never suggest moderation — only strategies that support your decision to stay sharp.' },
+    { q: 'What happens if I relapse?', a: 'You reset your counter and keep going. No judgement. No shame. Your historical data, savings calculations, and milestones are preserved. The app is designed to support long-term commitment, not perfection.' },
+    { q: 'Can I cancel anytime?', a: 'Yes. No contracts, no lock-in. Cancel through the App Store or Google Play at any time. Your data is yours and can be exported or deleted permanently.' },
+    { q: 'Is the £9.99/month price going up?', a: 'Yes — our launch price is less than two pints a month. Early subscribers lock in this founding member rate. Once we add human coaching features, the price will increase to reflect the value. Pay annually and save 20%.' },
+  ]
+
+  return (
+    <section className="faq" id="faq">
+      <div className="faq-inner">
+        <Reveal>
+          <span className="section-eyebrow">QUESTIONS</span>
+          <h2 className="section-heading" style={{ textAlign: 'center' }}>
+            Straight <span className="text-gradient">answers.</span>
+          </h2>
+        </Reveal>
+
+        <div className="faq-list">
+          {faqs.map((faq, i) => (
+            <Reveal key={i} delay={i * 60}>
+              <div
+                className={`faq-item ${open === i ? 'faq-item-open' : ''}`}
+                onClick={() => setOpen(open === i ? null : i)}
+              >
+                <div className="faq-question">
+                  <span>{faq.q}</span>
+                  <svg className="faq-chevron" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M5 8l5 5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <div className="faq-answer">
+                  <p>{faq.a}</p>
+                </div>
+              </div>
             </Reveal>
           ))}
         </div>
@@ -1114,73 +1052,6 @@ function Waitlist() {
   )
 }
 
-/* ━━━ FAQ ACCORDION ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-function FAQ() {
-  const [open, setOpen] = useState(null)
-
-  const faqs = [
-    {
-      q: 'Is this app only for people with alcohol addiction?',
-      a: 'No. Success & Sobriety is for any professional man who\'s decided alcohol no longer serves his goals. Whether you\'re cutting back, going fully sober, or just curious about the edge sobriety gives — this app meets you where you are.',
-    },
-    {
-      q: 'Will anyone know I\'m using this app?',
-      a: 'Absolutely not. The app uses a disguised icon, requires Face ID to open, has no social features, and shares zero data with anyone. It\'s designed from the ground up for men who need complete discretion.',
-    },
-    {
-      q: 'How is the AI Coach different from ChatGPT?',
-      a: 'Our coach is purpose-built for sobriety in professional contexts. It understands business culture, client entertainment, and corporate pressure. It\'s hardcoded to never suggest moderation — only strategies that support your decision to stay sharp.',
-    },
-    {
-      q: 'What happens if I relapse?',
-      a: 'You reset your counter and keep going. No judgement. No shame. No "start from scratch" feeling. Your historical data, savings calculations, and milestones are preserved. The app is designed to support long-term commitment, not perfection.',
-    },
-    {
-      q: 'Can I cancel anytime?',
-      a: 'Yes. No contracts, no lock-in. Cancel through the App Store or Google Play at any time. Your data is yours and can be exported or deleted permanently.',
-    },
-    {
-      q: 'Is the £4.99/month price going up?',
-      a: 'Yes — our launch price is less than a single pint. Early subscribers lock in this founding member rate. Once we add human coaching features, the price will increase to reflect the value.',
-    },
-  ]
-
-  return (
-    <section className="faq" id="faq">
-      <div className="faq-inner">
-        <Reveal>
-          <span className="section-eyebrow">QUESTIONS</span>
-          <h2 className="section-heading" style={{ textAlign: 'center' }}>
-            Straight <span className="text-gradient">answers.</span>
-          </h2>
-        </Reveal>
-
-        <div className="faq-list">
-          {faqs.map((faq, i) => (
-            <Reveal key={i} delay={i * 60}>
-              <div
-                className={`faq-item ${open === i ? 'faq-item-open' : ''}`}
-                onClick={() => setOpen(open === i ? null : i)}
-              >
-                <div className="faq-question">
-                  <span>{faq.q}</span>
-                  <svg className="faq-chevron" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <path d="M5 8l5 5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-                <div className="faq-answer">
-                  <p>{faq.a}</p>
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
 /* ━━━ TRUST BADGES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 function TrustBadges() {
@@ -1227,7 +1098,7 @@ function Footer() {
   )
 }
 
-/* ━━━ APP ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ━━━ APP — 12 SECTIONS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 export default function App() {
   return (
@@ -1237,17 +1108,11 @@ export default function App() {
       <Nav />
       <Hero />
       <SocialProof />
-      <Marquee />
       <Features />
-      <BigStat />
       <SavingsCalculator />
       <Transformation />
-      <BigStat2 />
-      <FeatureShowcase />
       <Playbook />
-      <HowItWorks />
       <CoachSection />
-      <Vault />
       <Testimonials />
       <Pricing />
       <FAQ />
