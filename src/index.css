@@ -1,0 +1,40 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #0A0A0F;
+  --surface: #141419;
+  --surface-light: #1E1E26;
+  --border: #2A2A35;
+  --primary: #4A90D9;
+  --primary-light: #6BA5E7;
+  --accent: #D4AF37;
+  --accent-light: #E5C85C;
+  --text: #F5F5F7;
+  --text-secondary: #8E8E93;
+  --text-muted: #636366;
+  --success: #34C759;
+  --danger: #FF3B30;
+  --white: #FFFFFF;
+
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+}
