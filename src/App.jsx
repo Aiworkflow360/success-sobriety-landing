@@ -303,6 +303,36 @@ function SocialProof() {
   )
 }
 
+/* ━━━ MARQUEE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+function Marquee() {
+  const items = [
+    'PERFORMANCE FOCUSED',
+    'AI-POWERED COACHING',
+    'EXECUTIVE-LEVEL PRIVACY',
+    'SITUATION PLAYBOOK',
+    'DAILY PROTOCOL',
+    '22 MILESTONES',
+    'APPLE HEALTH SYNC',
+    'ZERO DATA SHARING',
+    'BUILT FOR PROFESSIONAL MEN',
+    'FACE ID PROTECTED',
+  ]
+
+  return (
+    <div className="marquee-wrap">
+      <div className="marquee-track">
+        {[...items, ...items].map((item, i) => (
+          <span key={i} className="marquee-item">
+            <span className="marquee-dot" />
+            {item}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 /* ━━━ FEATURES BENTO GRID ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 function Features() {
@@ -401,6 +431,26 @@ function Features() {
             </GlassCard>
           </Reveal>
         </div>
+      </div>
+    </section>
+  )
+}
+
+/* ━━━ BIG STAT (Apple-style) ━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+function BigStat() {
+  const [ref, inView] = useInView({ threshold: 0.3 })
+  const pct = useCountUp(73, 2500, inView)
+
+  return (
+    <section ref={ref} className={`bigstat ${inView ? 'bigstat-in' : ''}`}>
+      <div className="bigstat-inner">
+        <span className="bigstat-num">{pct}%</span>
+        <p className="bigstat-text">
+          of professional men say alcohol <em>negatively impacts</em> their<br />
+          performance, productivity, and decision-making.
+        </p>
+        <p className="bigstat-source">Source: Deloitte Workplace Wellness Report, 2024</p>
       </div>
     </section>
   )
@@ -550,6 +600,66 @@ function Vault() {
   )
 }
 
+/* ━━━ TESTIMONIALS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+function Testimonials() {
+  const quotes = [
+    {
+      text: "I was spending £200 a week on client dinners and after-work drinks. Now I'm sharper in every meeting, closing more deals, and banking that money instead.",
+      name: "James T.",
+      role: "Managing Director, London",
+      days: 312,
+    },
+    {
+      text: "The Playbook section alone is worth the subscription. I used the 'Client Dinner' strategy last week and nobody even noticed I wasn't drinking.",
+      name: "Marcus R.",
+      role: "Sales Director, Manchester",
+      days: 147,
+    },
+    {
+      text: "No social features, no community forums, no sharing. Finally an app that respects that some of us just want to handle this privately and get on with it.",
+      name: "David K.",
+      role: "Partner, Big 4 Firm",
+      days: 89,
+    },
+  ]
+
+  return (
+    <section className="testimonials" id="testimonials">
+      <div className="testimonials-inner">
+        <Reveal>
+          <span className="section-eyebrow">EARLY TESTERS</span>
+          <h2 className="section-heading" style={{ textAlign: 'center' }}>
+            Built with men <span className="text-gradient">like you.</span>
+          </h2>
+        </Reveal>
+
+        <div className="testimonials-grid">
+          {quotes.map((q, i) => (
+            <Reveal key={i} delay={i * 120}>
+              <GlassCard className="testimonial-card">
+                <div className="testimonial-stars">{'★'.repeat(5)}</div>
+                <p className="testimonial-text">"{q.text}"</p>
+                <div className="testimonial-footer">
+                  <div className="testimonial-avatar">{q.name.charAt(0)}</div>
+                  <div className="testimonial-info">
+                    <span className="testimonial-name">{q.name}</span>
+                    <span className="testimonial-role">{q.role}</span>
+                  </div>
+                  <div className="testimonial-days">
+                    <span className="testimonial-days-num">{q.days}</span>
+                    <span className="testimonial-days-label">days</span>
+                  </div>
+                </div>
+              </GlassCard>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 /* ━━━ PRICING ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 function Pricing() {
@@ -591,7 +701,7 @@ function Pricing() {
         <div className="pricing-grid">
           {tiers.map((tier, i) => (
             <Reveal key={i} delay={i * 120}>
-              <GlassCard className={`pricing-card ${tier.featured ? 'pricing-featured' : ''}`} hover={false}>
+              <GlassCard className={`pricing-card ${tier.featured ? 'pricing-featured gradient-border' : ''}`} hover={false}>
                 {tier.featured && <div className="pricing-glow" />}
                 {tier.badge && <span className="pricing-badge-tag">{tier.badge}</span>}
                 <h3 className="pricing-tier-name">{tier.name}</h3>
@@ -706,10 +816,13 @@ export default function App() {
       <Nav />
       <Hero />
       <SocialProof />
+      <Marquee />
       <Features />
+      <BigStat />
       <Playbook />
       <CoachSection />
       <Vault />
+      <Testimonials />
       <Pricing />
       <Waitlist />
       <Footer />
