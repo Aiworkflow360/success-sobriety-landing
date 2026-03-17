@@ -1114,14 +1114,113 @@ function Waitlist() {
   )
 }
 
+/* ━━━ FAQ ACCORDION ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+function FAQ() {
+  const [open, setOpen] = useState(null)
+
+  const faqs = [
+    {
+      q: 'Is this app only for people with alcohol addiction?',
+      a: 'No. Success & Sobriety is for any professional man who\'s decided alcohol no longer serves his goals. Whether you\'re cutting back, going fully sober, or just curious about the edge sobriety gives — this app meets you where you are.',
+    },
+    {
+      q: 'Will anyone know I\'m using this app?',
+      a: 'Absolutely not. The app uses a disguised icon, requires Face ID to open, has no social features, and shares zero data with anyone. It\'s designed from the ground up for men who need complete discretion.',
+    },
+    {
+      q: 'How is the AI Coach different from ChatGPT?',
+      a: 'Our coach is purpose-built for sobriety in professional contexts. It understands business culture, client entertainment, and corporate pressure. It\'s hardcoded to never suggest moderation — only strategies that support your decision to stay sharp.',
+    },
+    {
+      q: 'What happens if I relapse?',
+      a: 'You reset your counter and keep going. No judgement. No shame. No "start from scratch" feeling. Your historical data, savings calculations, and milestones are preserved. The app is designed to support long-term commitment, not perfection.',
+    },
+    {
+      q: 'Can I cancel anytime?',
+      a: 'Yes. No contracts, no lock-in. Cancel through the App Store or Google Play at any time. Your data is yours and can be exported or deleted permanently.',
+    },
+    {
+      q: 'Is the £4.99/month price going up?',
+      a: 'Yes — our launch price is less than a single pint. Early subscribers lock in this founding member rate. Once we add human coaching features, the price will increase to reflect the value.',
+    },
+  ]
+
+  return (
+    <section className="faq" id="faq">
+      <div className="faq-inner">
+        <Reveal>
+          <span className="section-eyebrow">QUESTIONS</span>
+          <h2 className="section-heading" style={{ textAlign: 'center' }}>
+            Straight <span className="text-gradient">answers.</span>
+          </h2>
+        </Reveal>
+
+        <div className="faq-list">
+          {faqs.map((faq, i) => (
+            <Reveal key={i} delay={i * 60}>
+              <div
+                className={`faq-item ${open === i ? 'faq-item-open' : ''}`}
+                onClick={() => setOpen(open === i ? null : i)}
+              >
+                <div className="faq-question">
+                  <span>{faq.q}</span>
+                  <svg className="faq-chevron" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M5 8l5 5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <div className="faq-answer">
+                  <p>{faq.a}</p>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ━━━ TRUST BADGES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+function TrustBadges() {
+  const badges = [
+    { icon: '🔒', text: 'End-to-End Encrypted' },
+    { icon: '🍎', text: 'Apple Health Ready' },
+    { icon: '🛡️', text: 'GDPR Compliant' },
+    { icon: '🔬', text: 'Evidence-Based' },
+    { icon: '🇬🇧', text: 'Built in the UK' },
+    { icon: '⚡', text: 'Offline Capable' },
+  ]
+
+  return (
+    <div className="trust-badges">
+      {badges.map((b, i) => (
+        <div key={i} className="trust-badge">
+          <span className="trust-badge-icon">{b.icon}</span>
+          <span className="trust-badge-text">{b.text}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 /* ━━━ FOOTER ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 function Footer() {
   return (
     <footer className="footer">
       <div className="footer-inner">
+        <TrustBadges />
         <span className="footer-brand">Success & Sobriety</span>
         <p className="footer-tagline">The performance app for men who've decided alcohol no longer serves them.</p>
+        <div className="footer-links">
+          <a href="#features">Features</a>
+          <a href="#calculator">Calculator</a>
+          <a href="#playbook">Playbook</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#faq">FAQ</a>
+        </div>
         <p className="footer-copy">&copy; 2026 Success & Sobriety. All rights reserved.</p>
       </div>
     </footer>
@@ -1151,6 +1250,7 @@ export default function App() {
       <Vault />
       <Testimonials />
       <Pricing />
+      <FAQ />
       <Waitlist />
       <Footer />
     </>
