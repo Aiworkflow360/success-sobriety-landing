@@ -501,6 +501,45 @@ function Playbook() {
   )
 }
 
+/* ━━━ HOW IT WORKS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+function HowItWorks() {
+  const steps = [
+    { num: '01', title: 'Download & Set Your Date', desc: 'Create your private account. Set your sobriety start date. No social connections required.' },
+    { num: '02', title: 'Build Your Protocol', desc: 'Customise your daily routine — morning, midday, evening. Start tracking streaks from day one.' },
+    { num: '03', title: 'Face Any Situation', desc: 'Open the Playbook before any event. Get a strategy for what to say, order, and how to handle questions.' },
+    { num: '04', title: 'Watch Your Edge Compound', desc: 'Track money saved, hours reclaimed, calories avoided. See your performance metrics climb.' },
+  ]
+
+  return (
+    <section className="how-it-works">
+      <div className="hiw-inner">
+        <Reveal>
+          <span className="section-eyebrow">HOW IT WORKS</span>
+          <h2 className="section-heading" style={{ textAlign: 'center' }}>
+            Four steps to <span className="text-gradient">your edge.</span>
+          </h2>
+        </Reveal>
+
+        <div className="hiw-steps">
+          {steps.map((step, i) => (
+            <Reveal key={i} delay={i * 120} className="hiw-step">
+              <div className="hiw-num-wrap">
+                <span className="hiw-num">{step.num}</span>
+                {i < steps.length - 1 && <div className="hiw-connector" />}
+              </div>
+              <div className="hiw-content">
+                <h4 className="hiw-title">{step.title}</h4>
+                <p className="hiw-desc">{step.desc}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 /* ━━━ AI COACH SECTION ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 function CoachSection() {
@@ -820,6 +859,7 @@ export default function App() {
       <Features />
       <BigStat />
       <Playbook />
+      <HowItWorks />
       <CoachSection />
       <Vault />
       <Testimonials />
