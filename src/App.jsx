@@ -601,6 +601,58 @@ function Transformation() {
   )
 }
 
+/* ━━━ PROGRESS CHIPS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+function ProgressChips() {
+  const chips = [
+    { label: '24 Hours', color: 'silver', desc: 'The hardest day. You did it.', icon: '⚡' },
+    { label: '1 Week', color: 'silver', desc: 'Sleep improving. Clarity returning.', icon: '🌅' },
+    { label: '2 Weeks', color: 'silver', desc: 'Energy surging. Mornings feel different.', icon: '🔋' },
+    { label: '1 Month', color: 'bronze', desc: 'Your brain is rewiring. Cravings fading.', icon: '🧠' },
+    { label: '2 Months', color: 'bronze', desc: 'Skin clearer. Weight dropping. People notice.', icon: '💪' },
+    { label: '3 Months', color: 'bronze', desc: 'New habits locked in. This is who you are now.', icon: '🔒' },
+    { label: '6 Months', color: 'gold', desc: 'Half a year of peak performance.', icon: '⭐' },
+    { label: '9 Months', color: 'gold', desc: 'Unrecognisable from where you started.', icon: '🏔️' },
+    { label: '1 Year', color: 'platinum', desc: 'One full year. Unstoppable.', icon: '👑' },
+    { label: '2 Years', color: 'platinum', desc: 'Sobriety is your superpower.', icon: '🔥' },
+    { label: '5 Years', color: 'diamond', desc: 'Half a decade of compounding advantage.', icon: '💎' },
+  ]
+
+  return (
+    <section className="chips" id="chips">
+      <div className="chips-inner">
+        <Reveal className="chips-header">
+          <span className="section-eyebrow">COLLECT YOUR PROGRESS</span>
+          <h2 className="section-heading" style={{ textAlign: 'center' }}>
+            Earn your <span className="text-gradient">chips.</span>
+          </h2>
+          <p className="section-sub" style={{ textAlign: 'center', margin: '0 auto' }}>
+            Just like AA sobriety chips — each milestone earned, never given. Your collection grows as you do.
+          </p>
+        </Reveal>
+
+        <div className="chips-track">
+          <div className="chips-line" />
+          {chips.map((chip, i) => (
+            <Reveal key={i} delay={i * 70}>
+              <div className={`chip chip-${chip.color}`}>
+                <div className="chip-face">
+                  <div className="chip-ring" />
+                  <span className="chip-icon">{chip.icon}</span>
+                  <span className="chip-label">{chip.label}</span>
+                </div>
+                <div className="chip-info">
+                  <span className="chip-desc">{chip.desc}</span>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 /* ━━━ INTERACTIVE PLAYBOOK ━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 function Playbook() {
@@ -1211,6 +1263,7 @@ export default function App() {
       <Features />
       <SavingsCalculator />
       <Transformation />
+      <ProgressChips />
       <Playbook />
       <CoachSection />
       <Testimonials />
