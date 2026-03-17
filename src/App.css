@@ -2140,6 +2140,225 @@
   vertical-align: middle;
 }
 
+/* ━━━ DAILY QUOTES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.quotes {
+  padding: var(--space-5xl) var(--space-xl);
+  position: relative;
+}
+
+.quotes-inner {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.quotes-header {
+  text-align: center;
+  margin-bottom: var(--space-4xl);
+}
+
+.quotes-card-wrap {
+  position: relative;
+}
+
+.quotes-card {
+  padding: var(--space-3xl) var(--space-2xl);
+  text-align: center;
+  position: relative;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.quotes-mark {
+  font-size: 120px;
+  font-weight: 800;
+  line-height: 0.6;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  opacity: 0.2;
+  position: absolute;
+  top: 24px;
+  left: 32px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.quotes-text {
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.5;
+  letter-spacing: -0.5px;
+  margin-bottom: var(--space-xl);
+  max-width: 640px;
+  animation: quoteIn 0.6s var(--ease-out-expo);
+}
+
+@keyframes quoteIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.quotes-attribution {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: var(--space-xl);
+}
+
+.quotes-author {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.quotes-role {
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+.quotes-nav {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.quotes-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: var(--text-4);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s var(--ease-out-expo);
+}
+
+.quotes-dot-active {
+  background: var(--accent);
+  transform: scale(1.4);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.quotes-dot:hover:not(.quotes-dot-active) {
+  background: var(--text-3);
+}
+
+@media (max-width: 768px) {
+  .quotes-card { padding: var(--space-2xl) var(--space-lg); min-height: 240px; }
+  .quotes-mark { font-size: 80px; top: 16px; left: 16px; }
+}
+
+/* ━━━ ADDITIONAL SUPPORT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.support {
+  padding: var(--space-5xl) var(--space-xl);
+  position: relative;
+}
+
+.support-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.support-header {
+  text-align: center;
+  margin-bottom: var(--space-4xl);
+}
+
+.support-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+}
+
+.support-link-anchor {
+  text-decoration: none;
+  display: block;
+  height: 100%;
+}
+
+.support-card {
+  padding: var(--space-xl);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.4s var(--ease-out-expo), border-color 0.4s, box-shadow 0.4s;
+}
+
+.support-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3), 0 0 60px rgba(74, 144, 217, 0.08);
+}
+
+.support-card:hover .support-arrow-row {
+  color: var(--accent);
+}
+
+.support-card:hover .support-arrow-row svg {
+  transform: translateX(4px);
+}
+
+.support-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.support-icon {
+  font-size: 28px;
+}
+
+.support-tag {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--accent);
+  padding: 4px 10px;
+  border: 1px solid var(--accent-dim);
+  border-radius: var(--radius-full);
+}
+
+.support-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: var(--space-sm);
+  letter-spacing: -0.3px;
+}
+
+.support-desc {
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.6;
+  flex: 1;
+  margin-bottom: var(--space-lg);
+}
+
+.support-arrow-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-3);
+  font-size: 13px;
+  font-weight: 600;
+  transition: color 0.3s;
+}
+
+.support-arrow-row svg {
+  transition: transform 0.3s var(--ease-out-expo);
+}
+
+@media (max-width: 768px) {
+  .support-grid { grid-template-columns: 1fr; }
+}
+
 /* ━━━ KEYFRAMES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 @keyframes fadeIn {

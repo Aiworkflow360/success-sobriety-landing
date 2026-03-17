@@ -69,41 +69,6 @@ function useMouseParallax(factor = 0.02) {
   return pos
 }
 
-/* 3D scroll-driven tilt: returns { rotateX, rotateY, progress } based on element's viewport position */
-function useScrollTilt(ref, { maxTilt = 12, axis = 'both' } = {}) {
-  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0, progress: 0 })
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    let ticking = false
-
-    const update = () => {
-      const rect = el.getBoundingClientRect()
-      const vh = window.innerHeight
-      // progress: 0 = just entering bottom, 0.5 = centered, 1 = exiting top
-      const center = rect.top + rect.height / 2
-      const progress = Math.max(0, Math.min(1, 1 - center / vh))
-      // Map progress to tilt: enters tilted, straightens at center, tilts opposite as exits
-      const normalized = (progress - 0.5) * 2 // -1 to 1
-      const rx = axis === 'y' ? 0 : -normalized * maxTilt
-      const ry = axis === 'x' ? 0 : normalized * (maxTilt * 0.4)
-      setTilt({ rotateX: rx, rotateY: ry, progress })
-      ticking = false
-    }
-
-    const onScroll = () => {
-      if (!ticking) { requestAnimationFrame(update); ticking = true }
-    }
-
-    window.addEventListener('scroll', onScroll, { passive: true })
-    update()
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [ref, maxTilt, axis])
-
-  return tilt
-}
-
 /* ━━━ PRIMITIVES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 function Reveal({ children, className = '', delay = 0, as: Tag = 'div' }) {
@@ -123,25 +88,6 @@ function GlassCard({ children, className = '', hover = true, glow, ...props }) {
   return (
     <div className={`glass ${hover ? 'glass-hover' : ''} ${glow ? `glass-glow-${glow}` : ''} ${className}`} {...props}>
       {children}
-    </div>
-  )
-}
-
-/* 3D Tilt wrapper — applies perspective + scroll-driven rotation */
-function Tilt3D({ children, className = '', maxTilt = 12, axis = 'both' }) {
-  const ref = useRef(null)
-  const { rotateX, rotateY } = useScrollTilt(ref, { maxTilt, axis })
-
-  return (
-    <div className={`tilt-3d-wrapper ${className}`} ref={ref}>
-      <div
-        className="tilt-3d-inner"
-        style={{
-          transform: `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
-        }}
-      >
-        {children}
-      </div>
     </div>
   )
 }
@@ -405,7 +351,7 @@ function SocialProof() {
   )
 }
 
-/* ━━━ FEATURES BENTO GRID — with 3D SCROLL TILT ━━━━━ */
+/* ━━━ FEATURES BENTO GRID ━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 function Features() {
   return (
@@ -421,8 +367,7 @@ function Features() {
         </Reveal>
 
         <div className="bento">
-          {/* Large feature — Scoreboard with 3D tilt */}
-          <Tilt3D className="bento-item bento-lg" maxTilt={8}>
+          <Reveal className="bento-item bento-lg">
             <GlassCard className="bento-card" glow="primary">
               <div className="bento-card-content">
                 <span className="bento-icon">📊</span>
@@ -438,10 +383,9 @@ function Features() {
                 <div className="mini-stat-card accent"><span className="mini-val">84,240</span><span className="mini-label">Calories</span></div>
               </div>
             </GlassCard>
-          </Tilt3D>
+          </Reveal>
 
-          {/* Medium — AI Coach with 3D tilt */}
-          <Tilt3D className="bento-item bento-md" maxTilt={10}>
+          <Reveal className="bento-item bento-md" delay={100}>
             <GlassCard className="bento-card" glow="accent">
               <span className="bento-icon">🧠</span>
               <h3 className="bento-title">AI Performance Coach</h3>
@@ -451,10 +395,9 @@ function Features() {
               </p>
               <div className="bento-tag">Powered by AI</div>
             </GlassCard>
-          </Tilt3D>
+          </Reveal>
 
-          {/* Medium — Privacy / Vault (merged) with 3D tilt */}
-          <Tilt3D className="bento-item bento-md" maxTilt={10}>
+          <Reveal className="bento-item bento-md" delay={200}>
             <GlassCard className="bento-card">
               <span className="bento-icon">🔐</span>
               <h3 className="bento-title">The Vault</h3>
@@ -468,10 +411,9 @@ function Features() {
                 ))}
               </div>
             </GlassCard>
-          </Tilt3D>
+          </Reveal>
 
-          {/* Small — Milestones */}
-          <Tilt3D className="bento-item bento-sm" maxTilt={14}>
+          <Reveal className="bento-item bento-sm" delay={100}>
             <GlassCard className="bento-card">
               <span className="bento-icon">🏆</span>
               <h3 className="bento-title">22 Milestones</h3>
@@ -484,10 +426,9 @@ function Features() {
                 ))}
               </div>
             </GlassCard>
-          </Tilt3D>
+          </Reveal>
 
-          {/* Small — Protocol */}
-          <Tilt3D className="bento-item bento-sm" maxTilt={14}>
+          <Reveal className="bento-item bento-sm" delay={200}>
             <GlassCard className="bento-card">
               <span className="bento-icon">✅</span>
               <h3 className="bento-title">Daily Protocol</h3>
@@ -495,10 +436,9 @@ function Features() {
                 Morning. Midday. Evening. Track streaks from Bronze to Platinum.
               </p>
             </GlassCard>
-          </Tilt3D>
+          </Reveal>
 
-          {/* Small — Debrief */}
-          <Tilt3D className="bento-item bento-sm" maxTilt={14}>
+          <Reveal className="bento-item bento-sm" delay={300}>
             <GlassCard className="bento-card">
               <span className="bento-icon">📝</span>
               <h3 className="bento-title">Performance Log</h3>
@@ -506,7 +446,7 @@ function Features() {
                 Rate mood, energy, productivity. Not a journal — a performance log.
               </p>
             </GlassCard>
-          </Tilt3D>
+          </Reveal>
         </div>
       </div>
     </section>
@@ -628,7 +568,7 @@ function Transformation() {
         </Reveal>
 
         <div className="transform-grid">
-          <Tilt3D maxTilt={10} axis="x">
+          <Reveal>
             <GlassCard className="transform-card transform-before" hover={false}>
               <h4 className="transform-card-title">With Alcohol</h4>
               <ul className="transform-list">
@@ -640,9 +580,9 @@ function Transformation() {
                 <li><span className="transform-x">✕</span> Extra 15kg you can't shift</li>
               </ul>
             </GlassCard>
-          </Tilt3D>
+          </Reveal>
 
-          <Tilt3D maxTilt={10} axis="x">
+          <Reveal delay={150}>
             <GlassCard className="transform-card transform-after" glow="primary" hover={false}>
               <h4 className="transform-card-title transform-title-glow">Without Alcohol</h4>
               <ul className="transform-list">
@@ -654,7 +594,7 @@ function Transformation() {
                 <li><span className="transform-check">✓</span> Lean, energised, unstoppable</li>
               </ul>
             </GlassCard>
-          </Tilt3D>
+          </Reveal>
         </div>
       </div>
     </section>
@@ -707,7 +647,7 @@ function Playbook() {
 
         <div className="playbook-grid">
           {scenarios.map((s, i) => (
-            <Tilt3D key={i} className="playbook-tilt" maxTilt={expanded === i ? 0 : 8}>
+            <Reveal key={i} delay={i * 60}>
               <div
                 className={`playbook-card-interactive ${expanded === i ? 'playbook-expanded' : ''}`}
                 onClick={() => setExpanded(expanded === i ? null : i)}
@@ -733,7 +673,7 @@ function Playbook() {
                   </div>
                 </GlassCard>
               </div>
-            </Tilt3D>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -776,7 +716,7 @@ function CoachSection() {
           </ul>
         </Reveal>
 
-        <Tilt3D maxTilt={6} className="coach-right">
+        <Reveal className="coach-right" delay={200}>
           <div className="coach-chat-frame">
             <div className="coach-chat-bar">
               <div className="coach-chat-dot" /><div className="coach-chat-dot" /><div className="coach-chat-dot" />
@@ -796,13 +736,13 @@ function CoachSection() {
               </div>
             </div>
           </div>
-        </Tilt3D>
+        </Reveal>
       </div>
     </section>
   )
 }
 
-/* ━━━ TESTIMONIALS with 3D TILT ━━━━━━━━━━━━━━━━━━━━━ */
+/* ━━━ TESTIMONIALS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 function Testimonials() {
   const quotes = [
@@ -838,7 +778,7 @@ function Testimonials() {
 
         <div className="testimonials-grid">
           {quotes.map((q, i) => (
-            <Tilt3D key={i} maxTilt={10}>
+            <Reveal key={i} delay={i * 100}>
               <GlassCard className="testimonial-card">
                 <div className="testimonial-stars">{'★'.repeat(5)}</div>
                 <p className="testimonial-text">"{q.text}"</p>
@@ -854,8 +794,75 @@ function Testimonials() {
                   </div>
                 </div>
               </GlassCard>
-            </Tilt3D>
+            </Reveal>
           ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ━━━ DAILY QUOTES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+function DailyQuotes() {
+  const quotes = [
+    { text: "Discipline equals freedom.", author: "Jocko Willink", role: "Navy SEAL Commander" },
+    { text: "You are what you do, not what you say you'll do.", author: "Carl Jung", role: "Psychologist" },
+    { text: "The impediment to action advances action. What stands in the way becomes the way.", author: "Marcus Aurelius", role: "Roman Emperor" },
+    { text: "You don't rise to the level of your goals. You fall to the level of your systems.", author: "James Clear", role: "Author, Atomic Habits" },
+    { text: "Who you are is defined by what you're willing to struggle for.", author: "Mark Manson", role: "Author" },
+    { text: "The only person you are destined to become is the person you decide to be.", author: "Ralph Waldo Emerson", role: "Philosopher" },
+    { text: "It's not about being the best. It's about being better than you were yesterday.", author: "David Goggins", role: "Ultra-endurance Athlete" },
+    { text: "First say to yourself what you would be; and then do what you have to do.", author: "Epictetus", role: "Stoic Philosopher" },
+    { text: "A man who conquers himself is greater than one who conquers a thousand men in battle.", author: "Buddha", role: "Spiritual Teacher" },
+    { text: "The secret of change is to focus all of your energy not on fighting the old, but on building the new.", author: "Socrates", role: "Philosopher" },
+    { text: "Strength does not come from winning. Your struggles develop your strengths.", author: "Arnold Schwarzenegger", role: "Actor & Governor" },
+    { text: "We suffer more often in imagination than in reality.", author: "Seneca", role: "Stoic Philosopher" },
+    { text: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill", role: "Prime Minister" },
+    { text: "The man who moves a mountain begins by carrying away small stones.", author: "Confucius", role: "Philosopher" },
+    { text: "Every action you take is a vote for the type of person you wish to become.", author: "James Clear", role: "Author, Atomic Habits" },
+  ]
+
+  const [current, setCurrent] = useState(0)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent(prev => (prev + 1) % quotes.length)
+    }, 8000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const q = quotes[current]
+
+  return (
+    <section className="quotes" id="quotes">
+      <div className="quotes-inner">
+        <Reveal className="quotes-header">
+          <span className="section-eyebrow">DAILY FUEL</span>
+          <h2 className="section-heading" style={{ textAlign: 'center' }}>
+            Words that <span className="text-gradient">forge willpower.</span>
+          </h2>
+        </Reveal>
+
+        <div className="quotes-card-wrap">
+          <GlassCard className="quotes-card" hover={false} glow="accent">
+            <div className="quotes-mark">&ldquo;</div>
+            <p className="quotes-text" key={current}>{q.text}</p>
+            <div className="quotes-attribution">
+              <span className="quotes-author">{q.author}</span>
+              <span className="quotes-role">{q.role}</span>
+            </div>
+            <div className="quotes-nav">
+              {quotes.map((_, i) => (
+                <button
+                  key={i}
+                  className={`quotes-dot ${i === current ? 'quotes-dot-active' : ''}`}
+                  onClick={() => setCurrent(i)}
+                  aria-label={`Quote ${i + 1}`}
+                />
+              ))}
+            </div>
+          </GlassCard>
         </div>
       </div>
     </section>
@@ -905,7 +912,7 @@ function Pricing() {
 
         <div className="pricing-grid">
           {tiers.map((tier, i) => (
-            <Tilt3D key={i} maxTilt={6}>
+            <Reveal key={i} delay={i * 100}>
               <GlassCard className={`pricing-card ${tier.featured ? 'pricing-featured gradient-border' : ''}`} hover={false}>
                 {tier.featured && <div className="pricing-glow" />}
                 {tier.badge && <span className="pricing-badge-tag">{tier.badge}</span>}
@@ -933,7 +940,7 @@ function Pricing() {
                   <a href="#waitlist" className="btn btn-primary btn-full">Start Free Trial</a>
                 )}
               </GlassCard>
-            </Tilt3D>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -982,6 +989,99 @@ function FAQ() {
                   <p>{faq.a}</p>
                 </div>
               </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ━━━ ADDITIONAL SUPPORT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+function Support() {
+  const resources = [
+    {
+      icon: '🔵',
+      name: 'Alcoholics Anonymous UK',
+      desc: 'The original fellowship. Meetings nationwide, 24/7 helpline.',
+      url: 'https://www.alcoholics-anonymous.org.uk',
+      tag: 'MEETINGS',
+    },
+    {
+      icon: '🌍',
+      name: 'AA Meeting Finder',
+      desc: 'Find your nearest AA meeting — in-person or online, any time.',
+      url: 'https://www.alcoholics-anonymous.org.uk/AA-Meetings/Find-a-Meeting',
+      tag: 'FIND A MEETING',
+    },
+    {
+      icon: '🧠',
+      name: 'SMART Recovery UK',
+      desc: 'Science-based mutual support. Tools and techniques for self-empowerment.',
+      url: 'https://smartrecovery.org.uk',
+      tag: 'SCIENCE-BASED',
+    },
+    {
+      icon: '📞',
+      name: 'Drinkline',
+      desc: 'Free, confidential helpline. Call 0300 123 1110. Weekdays 9am–8pm, weekends 11am–4pm.',
+      url: 'tel:03001231110',
+      tag: 'FREE HELPLINE',
+    },
+    {
+      icon: '💚',
+      name: 'Al-Anon UK',
+      desc: 'Support for families and friends affected by someone else\'s drinking.',
+      url: 'https://www.al-anonuk.org.uk',
+      tag: 'FOR FAMILIES',
+    },
+    {
+      icon: '🏥',
+      name: 'NHS Alcohol Support',
+      desc: 'NHS guidance, local services, and treatment options. Always free.',
+      url: 'https://www.nhs.uk/live-well/alcohol-advice/',
+      tag: 'NHS',
+    },
+  ]
+
+  return (
+    <section className="support" id="support">
+      <div className="support-inner">
+        <Reveal className="support-header">
+          <span className="section-eyebrow">YOU'RE NOT ALONE</span>
+          <h2 className="section-heading" style={{ textAlign: 'center' }}>
+            Additional <span className="text-gradient">support.</span>
+          </h2>
+          <p className="section-sub" style={{ textAlign: 'center', margin: '0 auto' }}>
+            An app is a tool. Sometimes you need people too. These organisations are trusted, free, and confidential.
+          </p>
+        </Reveal>
+
+        <div className="support-grid">
+          {resources.map((r, i) => (
+            <Reveal key={i} delay={i * 80}>
+              <a
+                href={r.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="support-link-anchor"
+              >
+                <GlassCard className="support-card gradient-border">
+                  <div className="support-card-top">
+                    <span className="support-icon">{r.icon}</span>
+                    <span className="support-tag">{r.tag}</span>
+                  </div>
+                  <h4 className="support-name">{r.name}</h4>
+                  <p className="support-desc">{r.desc}</p>
+                  <div className="support-arrow-row">
+                    <span className="support-cta">Visit</span>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                </GlassCard>
+              </a>
             </Reveal>
           ))}
         </div>
@@ -1098,7 +1198,7 @@ function Footer() {
   )
 }
 
-/* ━━━ APP — 12 SECTIONS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ━━━ APP — 14 SECTIONS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 export default function App() {
   return (
@@ -1114,8 +1214,10 @@ export default function App() {
       <Playbook />
       <CoachSection />
       <Testimonials />
+      <DailyQuotes />
       <Pricing />
       <FAQ />
+      <Support />
       <Waitlist />
       <Footer />
     </>
