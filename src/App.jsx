@@ -119,6 +119,7 @@ function ScrollProgress() {
 function Nav() {
   const y = useScrollY()
   const scrolled = y > 60
+  const [menuOpen, setMenuOpen] = useState(false)
 
   return (
     <nav className={`nav ${scrolled ? 'nav-solid' : ''}`}>
@@ -127,16 +128,24 @@ function Nav() {
           <span className="nav-logo">S</span>
           <span className="nav-brand-text">Success & Sobriety</span>
         </a>
-        <div className="nav-links">
-          <a href="#features">Features</a>
-          <a href="#playbook">Playbook</a>
-          <a href="#coach">Coach</a>
-          <a href="#pricing">Pricing</a>
+        <div className={`nav-links ${menuOpen ? 'nav-links-open' : ''}`}>
+          <a href="#features" onClick={() => setMenuOpen(false)}>Features</a>
+          <a href="#calculator" onClick={() => setMenuOpen(false)}>Calculator</a>
+          <a href="#playbook" onClick={() => setMenuOpen(false)}>Playbook</a>
+          <a href="#coach" onClick={() => setMenuOpen(false)}>Coach</a>
+          <a href="#pricing" onClick={() => setMenuOpen(false)}>Pricing</a>
         </div>
-        <a href="#waitlist" className="nav-cta-btn">
+        <a href="#waitlist" className="nav-cta-btn nav-cta-desktop">
           <span>Get Early Access</span>
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
         </a>
+        <button
+          className={`nav-hamburger ${menuOpen ? 'nav-hamburger-open' : ''}`}
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
+        >
+          <span /><span /><span />
+        </button>
       </div>
     </nav>
   )
@@ -440,17 +449,165 @@ function Features() {
 
 function BigStat() {
   const [ref, inView] = useInView({ threshold: 0.3 })
-  const pct = useCountUp(73, 2500, inView)
+  const num = useCountUp(35, 2500, inView)
 
   return (
     <section ref={ref} className={`bigstat ${inView ? 'bigstat-in' : ''}`}>
       <div className="bigstat-inner">
-        <span className="bigstat-num">{pct}%</span>
+        <span className="bigstat-num">&pound;{num}bn</span>
         <p className="bigstat-text">
-          of professional men say alcohol <em>negatively impacts</em> their<br />
-          performance, productivity, and decision-making.
+          The annual cost of alcohol to UK employers.<br />
+          Absenteeism. Lost productivity. <em>Poor decisions.</em>
         </p>
-        <p className="bigstat-source">Source: Deloitte Workplace Wellness Report, 2024</p>
+        <p className="bigstat-source">Source: Institute of Alcohol Studies, UK Government Data</p>
+      </div>
+    </section>
+  )
+}
+
+/* ━━━ SAVINGS CALCULATOR ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+function SavingsCalculator() {
+  const [weeklySpend, setWeeklySpend] = useState(80)
+  const [weeklyHours, setWeeklyHours] = useState(8)
+  const [ref, inView] = useInView({ threshold: 0.15 })
+
+  const yearlyMoney = weeklySpend * 52
+  const yearlyHours = weeklyHours * 52
+  const yearlyCalories = Math.round(weeklySpend / 5 * 180 * 52) // rough: £5/drink, 180cal/drink
+  const yearlyDays = Math.round(yearlyHours / 24)
+
+  return (
+    <section ref={ref} className={`calculator ${inView ? 'calculator-in' : ''}`} id="calculator">
+      <div className="calculator-inner">
+        <Reveal className="calculator-header">
+          <span className="section-eyebrow">YOUR EDGE, QUANTIFIED</span>
+          <h2 className="section-heading">
+            See what sobriety<br />
+            <span className="text-gradient">unlocks for you.</span>
+          </h2>
+          <p className="section-sub">Drag the sliders. See your numbers. This is your potential.</p>
+        </Reveal>
+
+        <div className="calculator-body">
+          <div className="calculator-inputs">
+            <GlassCard className="calculator-slider-card" hover={false}>
+              <div className="slider-header">
+                <label className="slider-label">Weekly alcohol spend</label>
+                <span className="slider-value">&pound;{weeklySpend}</span>
+              </div>
+              <input
+                type="range"
+                min="10"
+                max="300"
+                step="5"
+                value={weeklySpend}
+                onChange={(e) => setWeeklySpend(Number(e.target.value))}
+                className="calc-range"
+              />
+              <div className="slider-range-labels">
+                <span>&pound;10</span>
+                <span>&pound;300</span>
+              </div>
+            </GlassCard>
+
+            <GlassCard className="calculator-slider-card" hover={false}>
+              <div className="slider-header">
+                <label className="slider-label">Weekly hours drinking/recovering</label>
+                <span className="slider-value">{weeklyHours}h</span>
+              </div>
+              <input
+                type="range"
+                min="2"
+                max="30"
+                step="1"
+                value={weeklyHours}
+                onChange={(e) => setWeeklyHours(Number(e.target.value))}
+                className="calc-range"
+              />
+              <div className="slider-range-labels">
+                <span>2h</span>
+                <span>30h</span>
+              </div>
+            </GlassCard>
+          </div>
+
+          <div className="calculator-results">
+            <div className="calc-result-grid">
+              <GlassCard className="calc-result-card" glow="primary" hover={false}>
+                <span className="calc-result-icon">💰</span>
+                <span className="calc-result-num">&pound;{yearlyMoney.toLocaleString()}</span>
+                <span className="calc-result-label">Saved per year</span>
+                <span className="calc-result-sub">&pound;{(yearlyMoney * 5).toLocaleString()} over 5 years</span>
+              </GlassCard>
+              <GlassCard className="calc-result-card" glow="accent" hover={false}>
+                <span className="calc-result-icon">⏱️</span>
+                <span className="calc-result-num">{yearlyHours.toLocaleString()}</span>
+                <span className="calc-result-label">Hours reclaimed</span>
+                <span className="calc-result-sub">That's {yearlyDays} full days back</span>
+              </GlassCard>
+              <GlassCard className="calc-result-card" hover={false}>
+                <span className="calc-result-icon">🔥</span>
+                <span className="calc-result-num">{yearlyCalories.toLocaleString()}</span>
+                <span className="calc-result-label">Calories avoided</span>
+                <span className="calc-result-sub">~{Math.round(yearlyCalories / 7700)}kg of body fat</span>
+              </GlassCard>
+              <GlassCard className="calc-result-card" hover={false}>
+                <span className="calc-result-icon">📈</span>
+                <span className="calc-result-num">100%</span>
+                <span className="calc-result-label">Of mornings sharp</span>
+                <span className="calc-result-sub">No more wasted Sundays</span>
+              </GlassCard>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ━━━ BEFORE / AFTER ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+function Transformation() {
+  return (
+    <section className="transformation">
+      <div className="transformation-inner">
+        <Reveal className="transformation-header">
+          <span className="section-eyebrow">THE COMPOUND EFFECT</span>
+          <h2 className="section-heading" style={{ textAlign: 'center' }}>
+            Same career. <span className="text-gradient">Different edge.</span>
+          </h2>
+        </Reveal>
+
+        <div className="transform-grid">
+          <Reveal delay={0}>
+            <GlassCard className="transform-card transform-before" hover={false}>
+              <h4 className="transform-card-title">With Alcohol</h4>
+              <ul className="transform-list">
+                <li><span className="transform-x">✕</span> Groggy mornings, slow starts</li>
+                <li><span className="transform-x">✕</span> £4,000+ gone every year</li>
+                <li><span className="transform-x">✕</span> Anxiety before big meetings</li>
+                <li><span className="transform-x">✕</span> Sleep disrupted 3-4 nights/week</li>
+                <li><span className="transform-x">✕</span> Brain fog during key decisions</li>
+                <li><span className="transform-x">✕</span> Extra 15kg you can't shift</li>
+              </ul>
+            </GlassCard>
+          </Reveal>
+
+          <Reveal delay={200}>
+            <GlassCard className="transform-card transform-after" glow="primary" hover={false}>
+              <h4 className="transform-card-title transform-title-glow">Without Alcohol</h4>
+              <ul className="transform-list">
+                <li><span className="transform-check">✓</span> 5am starts, total clarity</li>
+                <li><span className="transform-check">✓</span> £4,000+ invested in yourself</li>
+                <li><span className="transform-check">✓</span> Calm, confident presence</li>
+                <li><span className="transform-check">✓</span> Deep sleep every single night</li>
+                <li><span className="transform-check">✓</span> Sharpest person in every room</li>
+                <li><span className="transform-check">✓</span> Lean, energised, unstoppable</li>
+              </ul>
+            </GlassCard>
+          </Reveal>
+        </div>
       </div>
     </section>
   )
@@ -732,9 +889,9 @@ function Pricing() {
         <Reveal>
           <span className="section-eyebrow">PRICING</span>
           <h2 className="section-heading">
-            Less than <span className="text-gradient">one night out.</span>
+            Less than <span className="text-gradient">one pint a month.</span>
           </h2>
-          <p className="section-sub">30 days free. Full access. No credit card.</p>
+          <p className="section-sub">That's it. Less than a single pint in your local. 30 days free. No credit card required.</p>
         </Reveal>
 
         <div className="pricing-grid">
@@ -858,6 +1015,8 @@ export default function App() {
       <Marquee />
       <Features />
       <BigStat />
+      <SavingsCalculator />
+      <Transformation />
       <Playbook />
       <HowItWorks />
       <CoachSection />
