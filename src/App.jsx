@@ -613,6 +613,131 @@ function Transformation() {
   )
 }
 
+/* ━━━ SECOND BIG STAT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+function BigStat2() {
+  const [ref, inView] = useInView({ threshold: 0.3 })
+  const num = useCountUp(400, 2000, inView)
+
+  return (
+    <section ref={ref} className={`bigstat bigstat-2 ${inView ? 'bigstat-in' : ''}`}>
+      <div className="bigstat-inner">
+        <span className="bigstat-num">{num}M</span>
+        <p className="bigstat-text">
+          people worldwide have an alcohol use disorder.<br />
+          Only <em>10% ever seek help.</em> You're already ahead.
+        </p>
+        <p className="bigstat-source">Source: World Health Organization, Global Alcohol Report</p>
+      </div>
+    </section>
+  )
+}
+
+/* ━━━ FLOATING PARTICLES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+function FloatingParticles() {
+  const particles = useMemo(() =>
+    Array.from({ length: 30 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: 2 + Math.random() * 3,
+      duration: 15 + Math.random() * 20,
+      delay: Math.random() * -20,
+      opacity: 0.1 + Math.random() * 0.2,
+    })),
+    []
+  )
+
+  return (
+    <div className="particles" aria-hidden="true">
+      {particles.map(p => (
+        <div
+          key={p.id}
+          className="particle"
+          style={{
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            width: `${p.size}px`,
+            height: `${p.size}px`,
+            opacity: p.opacity,
+            animationDuration: `${p.duration}s`,
+            animationDelay: `${p.delay}s`,
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
+/* ━━━ HORIZONTAL SCROLL SHOWCASE ━━━━━━━━━━━━━━━━━━━━ */
+
+function FeatureShowcase() {
+  const scrollRef = useRef(null)
+  const [ref, inView] = useInView({ threshold: 0.1 })
+
+  const features = [
+    {
+      title: 'Live Scoreboard',
+      desc: 'Real-time counter showing days, hours, and minutes. Money saved. Calories avoided. Hours reclaimed. Your performance dashboard.',
+      gradient: 'linear-gradient(135deg, #4A90D9 0%, #2563EB 100%)',
+      stat: '247 days',
+    },
+    {
+      title: 'Situation Playbook',
+      desc: 'Pre-built strategies for client dinners, networking events, stag dos, business travel. What to say, what to order, how to exit.',
+      gradient: 'linear-gradient(135deg, #C9A84C 0%, #D97706 100%)',
+      stat: '6 scenarios',
+    },
+    {
+      title: 'AI Performance Coach',
+      desc: 'An executive-level coach who understands boardrooms and business culture. Available 24/7. Never suggests moderation.',
+      gradient: 'linear-gradient(135deg, #30D158 0%, #10B981 100%)',
+      stat: 'Always on',
+    },
+    {
+      title: 'Daily Protocol',
+      desc: 'Morning breathwork. Midday check-in. Evening debrief. Build a streak from Bronze to Platinum. Track what winners track.',
+      gradient: 'linear-gradient(135deg, #FF6B6B 0%, #EE5A24 100%)',
+      stat: '3x daily',
+    },
+    {
+      title: 'The Vault',
+      desc: 'Face ID lock. Disguised app icon. Zero social features. No data sharing. Built for men whose biggest concern is discretion.',
+      gradient: 'linear-gradient(135deg, #a855f7 0%, #7C3AED 100%)',
+      stat: '100% private',
+    },
+  ]
+
+  return (
+    <section ref={ref} className={`showcase ${inView ? 'showcase-in' : ''}`}>
+      <Reveal className="showcase-header">
+        <span className="section-eyebrow">DEEP DIVE</span>
+        <h2 className="section-heading" style={{ textAlign: 'center' }}>
+          Built with <span className="text-gradient">obsessive detail.</span>
+        </h2>
+      </Reveal>
+
+      <div className="showcase-scroll" ref={scrollRef}>
+        <div className="showcase-track">
+          {features.map((f, i) => (
+            <div key={i} className="showcase-card">
+              <div className="showcase-card-accent" style={{ background: f.gradient }} />
+              <div className="showcase-card-body">
+                <span className="showcase-stat" style={{ background: f.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                  {f.stat}
+                </span>
+                <h3 className="showcase-card-title">{f.title}</h3>
+                <p className="showcase-card-desc">{f.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 /* ━━━ PLAYBOOK ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 function Playbook() {
@@ -1008,6 +1133,7 @@ function Footer() {
 export default function App() {
   return (
     <>
+      <FloatingParticles />
       <ScrollProgress />
       <Nav />
       <Hero />
@@ -1017,6 +1143,8 @@ export default function App() {
       <BigStat />
       <SavingsCalculator />
       <Transformation />
+      <BigStat2 />
+      <FeatureShowcase />
       <Playbook />
       <HowItWorks />
       <CoachSection />
