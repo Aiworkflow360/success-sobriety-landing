@@ -77,11 +77,14 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 80px;
+  overscroll-behavior-y: none;
+  background: var(--bg);
 }
 
 body {
   overflow-x: hidden;
   background: var(--bg);
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 #root {
