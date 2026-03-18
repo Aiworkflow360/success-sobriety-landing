@@ -464,6 +464,7 @@
 
 .hero {
   position: relative;
+  z-index: 1;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -591,6 +592,18 @@
   animation: phonePulse 4s ease-in-out infinite;
 }
 
+/* ── Fixed particle sphere backdrop ───────────────── */
+
+.particle-sphere-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
 /* ── Hero scroll hint ──────────────────────────────── */
 
 .hero-scroll-hint {
@@ -624,6 +637,8 @@
 /* ━━━ SOCIAL PROOF ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 .proof {
+  position: relative;
+  z-index: 1;
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   padding: var(--space-3xl) var(--space-xl);
@@ -682,6 +697,7 @@
 .features {
   padding: var(--space-5xl) var(--space-xl);
   position: relative;
+  z-index: 1;
 }
 
 .features-inner {
@@ -1240,6 +1256,8 @@
 
 .transformation {
   padding: var(--space-5xl) var(--space-xl);
+  position: relative;
+  z-index: 1;
 }
 
 .transformation-inner {
@@ -1613,6 +1631,8 @@
 
 .testimonials {
   padding: var(--space-5xl) var(--space-xl);
+  position: relative;
+  z-index: 1;
 }
 
 .testimonials-inner {
@@ -2076,6 +2096,8 @@
 /* ━━━ FOOTER ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 .footer {
+  position: relative;
+  z-index: 1;
   border-top: 1px solid var(--border);
   padding: var(--space-4xl) var(--space-xl) var(--space-2xl);
   text-align: center;

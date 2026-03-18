@@ -5,6 +5,7 @@ import {
   Nav, Footer, FloatingParticles, ScrollProgress, BackToTop, ScrollToTop,
 } from './components/shared'
 
+const ParticleSphere = lazy(() => import('./components/ParticleSphere'))
 const Home = lazy(() => import('./pages/Home'))
 const FeaturesPage = lazy(() => import('./pages/FeaturesPage'))
 const PodcastPage = lazy(() => import('./pages/PodcastPage'))
@@ -13,6 +14,9 @@ const PricingPage = lazy(() => import('./pages/PricingPage'))
 export default function App() {
   return (
     <BrowserRouter>
+      <Suspense fallback={null}>
+        <ParticleSphere className="particle-sphere-backdrop" />
+      </Suspense>
       <FloatingParticles />
       <ScrollProgress />
       <ScrollToTop />
