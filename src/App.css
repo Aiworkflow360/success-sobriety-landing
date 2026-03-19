@@ -474,6 +474,38 @@
   overflow: visible;
 }
 
+.hero-cinematic {
+  justify-content: center;
+  padding: 0 var(--space-xl);
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 25%;
+  will-change: transform;
+}
+
+.hero-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(6, 6, 12, 0.5) 0%,
+    rgba(6, 6, 12, 0.3) 30%,
+    rgba(6, 6, 12, 0.4) 60%,
+    var(--bg) 100%
+  );
+}
+
 .hero-mesh {
   z-index: 0;
 }
@@ -484,6 +516,75 @@
   text-align: center;
   max-width: 800px;
   will-change: transform, opacity;
+}
+
+/* ━━━ APP SHOWCASE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.app-showcase {
+  padding: var(--space-5xl) var(--space-xl);
+}
+
+.app-showcase-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3xl);
+  align-items: center;
+}
+
+.app-showcase-phone {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.app-showcase-img {
+  max-width: 420px;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-xl);
+  filter: drop-shadow(0 40px 80px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 60px rgba(74, 144, 217, 0.15));
+}
+
+.app-showcase-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.app-showcase-text .section-heading {
+  text-align: left;
+}
+
+.app-showcase-text .section-sub {
+  text-align: left;
+  margin: 0;
+}
+
+.app-showcase-text .btn {
+  align-self: flex-start;
+  margin-top: var(--space-md);
+}
+
+@media (max-width: 768px) {
+  .app-showcase-inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .app-showcase-text .section-heading,
+  .app-showcase-text .section-sub {
+    text-align: center;
+  }
+
+  .app-showcase-text .btn {
+    align-self: center;
+  }
+
+  .app-showcase-img {
+    max-width: 320px;
+  }
 }
 
 .hero-eyebrow {
@@ -539,6 +640,15 @@
   max-width: 520px;
   margin: 0 auto var(--space-2xl);
   animation: fadeInUp 0.8s var(--ease-out-expo) 0.55s both;
+}
+
+.hero-cinematic .hero-title-line {
+  text-shadow: 0 2px 40px rgba(0, 0, 0, 0.6);
+}
+
+.hero-cinematic .hero-sub {
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 1px 20px rgba(0, 0, 0, 0.5);
 }
 
 .hero-ctas {

@@ -22,11 +22,21 @@ function Hero() {
   const y = useScrollY()
   const opacity = Math.max(0, 1 - y / 600)
   const scale = 1 + y * 0.0003
-  const phoneY = y * 0.15
+  const imgScale = 1 + y * 0.0005
 
   return (
-    <section className="hero">
-      <GradientMesh className="hero-mesh" />
+    <section className="hero hero-cinematic">
+      <div className="hero-bg">
+        <img
+          src={silhouetteMan}
+          alt="Professional man silhouetted against dawn skyline holding a glass of water"
+          className="hero-bg-img"
+          style={{ transform: `scale(${imgScale})` }}
+          fetchpriority="high"
+          loading="eager"
+        />
+        <div className="hero-bg-overlay" />
+      </div>
 
       <div className="hero-content" style={{ opacity, transform: `scale(${scale})` }}>
         <div className="hero-eyebrow">
@@ -54,23 +64,42 @@ function Hero() {
         </div>
       </div>
 
-      <div className="hero-phone-wrapper" style={{ transform: `translateY(${phoneY}px)` }}>
-        <div className="hero-phone-img-wrap">
-          <div className="phone-glow" />
-          <img
-            src={phoneHero}
-            alt="Success & Sobriety app showing 247 days sober, £3,847 saved, 578 hours reclaimed"
-            className="hero-phone-img"
-            fetchpriority="high"
-            loading="eager"
-          />
-        </div>
-      </div>
-
       <div className="hero-scroll-hint" style={{ opacity: Math.max(0, 1 - y / 200) }}>
         <span>Scroll to explore</span>
         <div className="scroll-arrow" />
       </div>
+    </section>
+  )
+}
+
+/* ━━━ APP SHOWCASE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+function AppShowcase() {
+  return (
+    <section className="app-showcase">
+      <Reveal>
+        <div className="app-showcase-inner">
+          <div className="app-showcase-phone">
+            <div className="phone-glow" />
+            <img
+              src={phoneHero}
+              alt="Success & Sobriety app showing 247 days sober, £3,847 saved, 578 hours reclaimed"
+              className="app-showcase-img"
+              loading="lazy"
+            />
+          </div>
+          <div className="app-showcase-text">
+            <span className="section-eyebrow">YOUR DAILY DASHBOARD</span>
+            <h2 className="section-heading">
+              Every metric that <span className="text-gradient">matters.</span>
+            </h2>
+            <p className="section-sub">
+              Money saved. Hours reclaimed. Health milestones unlocked. All in one glance.
+            </p>
+            <Link to="/features" className="btn btn-glass">Explore Features</Link>
+          </div>
+        </div>
+      </Reveal>
     </section>
   )
 }
@@ -340,16 +369,7 @@ export default function Home() {
     <>
       <Hero />
       <SocialProof />
-      <section className="hero-divider">
-        <img src={silhouetteMan} alt="Professional man silhouetted against dawn skyline" className="hero-divider-img" loading="lazy" />
-        <div className="hero-divider-overlay" />
-        <div className="hero-divider-text">
-          <span className="section-eyebrow">BUILT FOR MEN WHO LEAD</span>
-          <h2 className="section-heading hero-divider-heading">
-            Your edge starts <span className="text-gradient">here.</span>
-          </h2>
-        </div>
-      </section>
+      <AppShowcase />
       <Features />
       <Transformation />
       <section className="hero-divider">
