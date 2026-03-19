@@ -440,11 +440,17 @@ function LifeTransformed() {
         </div>
 
         <Reveal delay={600}>
-          <div className="life-transformed-video-placeholder">
-            <div className="life-transformed-video-text">
-              <span className="section-eyebrow">COMING SOON</span>
-              <p>Watch the full cinematic transformation — from rock bottom to dream life.</p>
-            </div>
+          <div className="life-transformed-video">
+            <video
+              className="life-transformed-video-player"
+              autoPlay
+              muted
+              loop
+              playsInline
+              poster=""
+            >
+              <source src="/transformation.mp4" type="video/mp4" />
+            </video>
           </div>
         </Reveal>
 

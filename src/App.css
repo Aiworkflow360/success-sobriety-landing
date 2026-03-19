@@ -1936,19 +1936,17 @@
   color: var(--text-3);
 }
 
-.life-transformed-video-placeholder {
+.life-transformed-video {
   margin-top: var(--space-3xl);
-  border: 1px dashed rgba(212, 175, 55, 0.3);
   border-radius: 16px;
-  padding: var(--space-3xl) var(--space-xl);
-  text-align: center;
-  background: rgba(212, 175, 55, 0.03);
+  overflow: hidden;
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  box-shadow: 0 0 60px rgba(212, 175, 55, 0.08);
 }
 
-.life-transformed-video-text p {
-  color: var(--text-3);
-  font-size: 15px;
-  margin-top: var(--space-sm);
+.life-transformed-video-player {
+  width: 100%;
+  display: block;
 }
 
 /* ━━━ PRICING ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
