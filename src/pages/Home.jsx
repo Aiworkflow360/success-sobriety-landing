@@ -13,6 +13,8 @@ import milestoneCollection from '../assets/chips/milestone-collection.jpg'
 import dailyProtocol from '../assets/daily-protocol.jpg'
 import performanceLog from '../assets/performance-log.jpg'
 import beforeAfter from '../assets/before-after.jpg'
+import morningDiscipline from '../assets/morning-discipline.jpeg'
+import wellnessHero from '../assets/wellness-hero.jpeg'
 
 /* ━━━ HERO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
@@ -350,8 +352,27 @@ export default function Home() {
       </section>
       <Features />
       <Transformation />
-      <CtaStrip />
+      <section className="hero-divider">
+        <img src={morningDiscipline} alt="Man running at dawn across a bridge — discipline, clarity, golden sunrise" className="hero-divider-img" loading="lazy" />
+        <div className="hero-divider-overlay" />
+        <div className="hero-divider-text">
+          <span className="section-eyebrow">DISCIPLINE IS FREEDOM</span>
+          <h2 className="section-heading hero-divider-heading">
+            5am starts. <span className="text-gradient">Total clarity.</span>
+          </h2>
+        </div>
+      </section>
       <Testimonials />
+      <section className="hero-divider">
+        <img src={wellnessHero} alt="Man meditating in luxury apartment overlooking London skyline at night" className="hero-divider-img" loading="lazy" />
+        <div className="hero-divider-overlay" />
+        <div className="hero-divider-text">
+          <span className="section-eyebrow">BUILT-IN WELLNESS TOOLKIT</span>
+          <h2 className="section-heading hero-divider-heading">
+            Breathe. Ground. <span className="text-gradient">Reset.</span>
+          </h2>
+        </div>
+      </section>
       <Waitlist />
     </>
   )
