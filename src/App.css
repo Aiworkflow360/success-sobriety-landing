@@ -3268,3 +3268,109 @@
     height: 40px;
   }
 }
+
+/* ━━━ LEGAL PAGES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.legal-page {
+  min-height: 100vh;
+  padding: calc(100px + env(safe-area-inset-top, 0px)) var(--space-lg) var(--space-4xl);
+}
+
+.legal-inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.legal-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: var(--space-sm);
+  letter-spacing: -0.03em;
+}
+
+.legal-updated {
+  font-size: 0.875rem;
+  color: var(--text-3);
+  margin-bottom: var(--space-3xl);
+}
+
+.legal-section {
+  margin-bottom: var(--space-2xl);
+}
+
+.legal-section h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: var(--space-md);
+  letter-spacing: -0.02em;
+}
+
+.legal-section h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-2);
+  margin-bottom: var(--space-sm);
+  margin-top: var(--space-lg);
+}
+
+.legal-section p {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text-2);
+  margin-bottom: var(--space-md);
+}
+
+.legal-section ul {
+  list-style: none;
+  padding-left: var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+
+.legal-section ul li {
+  position: relative;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text-2);
+  margin-bottom: var(--space-xs);
+}
+
+.legal-section ul li::before {
+  content: '›';
+  position: absolute;
+  left: calc(-1 * var(--space-md));
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.legal-section a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color 0.2s var(--ease-out-expo);
+}
+
+.legal-section a:hover {
+  color: var(--accent);
+}
+
+.legal-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--text-3);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: var(--space-xl);
+  transition: color 0.2s var(--ease-out-expo);
+}
+
+.legal-back:hover {
+  color: var(--text);
+}
+
+.legal-back svg {
+  width: 16px;
+  height: 16px;
+}

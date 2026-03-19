@@ -262,8 +262,8 @@ export function Footer() {
           <Link to="/pricing">Pricing</Link>
         </div>
         <div className="footer-legal">
-          <a href="/privacy">Privacy Policy</a>
-          <a href="/terms">Terms of Service</a>
+          <Link to="/privacy">Privacy Policy</Link>
+          <Link to="/terms">Terms of Service</Link>
         </div>
         <p className="footer-copy">&copy; 2026 Success & Sobriety. All rights reserved.</p>
       </div>
