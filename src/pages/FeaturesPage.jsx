@@ -269,6 +269,10 @@ function ProgressChips() {
           </p>
         </Reveal>
 
+        <Reveal delay={100}>
+          <h3 className="chips-subsection-title">Your Collection</h3>
+        </Reveal>
+
         <Reveal className="chips-showcase" delay={200}>
           <img
             src={monthlyChipsRow}
@@ -277,6 +281,10 @@ function ProgressChips() {
             loading="lazy"
           />
           <div className="chips-showcase-gradient" />
+        </Reveal>
+
+        <Reveal delay={100}>
+          <h3 className="chips-subsection-title">Health Milestones</h3>
         </Reveal>
 
         <div className="chips-milestones-row">
