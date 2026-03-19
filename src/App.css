@@ -1783,8 +1783,8 @@
 
 .testimonials-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-md);
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-lg);
 }
 
 .testimonial-card {
@@ -1816,16 +1816,11 @@
 }
 
 .testimonial-avatar {
-  width: 36px;
-  height: 36px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--white);
+  object-fit: cover;
+  border: 2px solid rgba(212, 175, 55, 0.3);
   flex-shrink: 0;
 }
 
@@ -1869,6 +1864,91 @@
 
 @media (max-width: 768px) {
   .testimonials-grid { grid-template-columns: 1fr; }
+}
+
+/* ━━━ LIFE TRANSFORMED ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.life-transformed {
+  padding: var(--space-5xl) var(--space-xl);
+}
+
+.life-transformed-inner {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.life-timeline {
+  margin-top: var(--space-3xl);
+  position: relative;
+}
+
+.life-stage {
+  display: flex;
+  gap: var(--space-lg);
+  padding-bottom: var(--space-xl);
+  position: relative;
+}
+
+.life-stage-marker {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 4px;
+  box-shadow: 0 0 12px currentColor;
+  z-index: 1;
+}
+
+.life-stage-line {
+  position: absolute;
+  left: 7px;
+  top: 20px;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, rgba(212, 175, 55, 0.3), rgba(74, 144, 217, 0.1));
+}
+
+.life-stage:last-child .life-stage-line {
+  display: none;
+}
+
+.life-stage-content {
+  flex: 1;
+}
+
+.life-stage-phase {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.life-stage-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--white);
+  margin: 4px 0 8px;
+}
+
+.life-stage-desc {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-3);
+}
+
+.life-transformed-video-placeholder {
+  margin-top: var(--space-3xl);
+  border: 1px dashed rgba(212, 175, 55, 0.3);
+  border-radius: 16px;
+  padding: var(--space-3xl) var(--space-xl);
+  text-align: center;
+  background: rgba(212, 175, 55, 0.03);
+}
+
+.life-transformed-video-text p {
+  color: var(--text-3);
+  font-size: 15px;
+  margin-top: var(--space-sm);
 }
 
 /* ━━━ PRICING ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */

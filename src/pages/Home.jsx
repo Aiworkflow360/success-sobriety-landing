@@ -15,6 +15,10 @@ import performanceLog from '../assets/performance-log.jpg'
 import beforeAfter from '../assets/before-after.jpg'
 import morningDiscipline from '../assets/morning-discipline.jpeg'
 import wellnessHero from '../assets/wellness-hero.jpeg'
+import testimonialJames from '../assets/testimonial-james.jpeg'
+import testimonialMarcus from '../assets/testimonial-marcus.jpeg'
+import testimonialDavid from '../assets/testimonial-david.jpeg'
+import testimonialTom from '../assets/testimonial-tom.jpeg'
 
 /* ━━━ HERO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
@@ -309,18 +313,28 @@ function Testimonials() {
       name: "James T.",
       role: "Managing Director, London",
       days: 312,
+      img: testimonialJames,
     },
     {
-      text: "The Playbook section alone is worth the subscription. I used the 'Client Dinner' strategy last week and nobody even noticed I wasn't drinking.",
+      text: "Built my company from a co-working space while getting sober. The daily protocol kept me accountable when nobody else knew what I was going through.",
       name: "Marcus R.",
-      role: "Sales Director, Manchester",
+      role: "Founder & CEO, Manchester",
       days: 147,
+      img: testimonialMarcus,
     },
     {
-      text: "No social features, no community forums, no sharing. Finally an app that respects that some of us just want to handle this privately and get on with it.",
+      text: "I needed a clear head and steady hands every single day. No community features, no forums — just a private, intelligent system that respects your time.",
       name: "David K.",
-      role: "Partner, Big 4 Firm",
+      role: "Consultant Surgeon, Edinburgh",
       days: 89,
+      img: testimonialDavid,
+    },
+    {
+      text: "I was the one always buying rounds, always last to leave. The Playbook's social strategies meant I could still do client dinners without anyone noticing.",
+      name: "Tom H.",
+      role: "Property Developer, Leeds",
+      days: 203,
+      img: testimonialTom,
     },
   ]
 
@@ -341,7 +355,7 @@ function Testimonials() {
                 <div className="testimonial-stars">{'★'.repeat(5)}</div>
                 <p className="testimonial-text">"{q.text}"</p>
                 <div className="testimonial-footer">
-                  <div className="testimonial-avatar">{q.name.charAt(0)}</div>
+                  <img className="testimonial-avatar" src={q.img} alt={q.name} />
                   <div className="testimonial-info">
                     <span className="testimonial-name">{q.name}</span>
                     <span className="testimonial-role">{q.role}</span>
@@ -355,6 +369,90 @@ function Testimonials() {
             </Reveal>
           ))}
         </div>
+      </div>
+    </section>
+  )
+}
+
+/* ━━━ LIFE TRANSFORMED ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+function LifeTransformed() {
+  const stages = [
+    {
+      phase: 'THE BLUR',
+      title: 'Where You Are Now',
+      desc: 'Foggy mornings. Missed opportunities. Telling yourself "I\'ll cut back next week" for the hundredth time. The hangovers get worse but the drinking stays the same.',
+      accent: '#8B3A3A',
+    },
+    {
+      phase: 'THE SHIFT',
+      title: 'Day 1 — You Decide',
+      desc: 'One morning you wake up and something clicks. You don\'t need willpower — you need a system. A private, intelligent companion that understands your world.',
+      accent: '#D4AF37',
+    },
+    {
+      phase: 'THE BUILD',
+      title: '30 Days — Momentum',
+      desc: 'Sleep normalises. Focus sharpens. You\'re the first one in the office. Colleagues notice something different but can\'t put their finger on it. You can.',
+      accent: '#4A90D9',
+    },
+    {
+      phase: 'THE CLIMB',
+      title: '90 Days — Compounding',
+      desc: 'The promotion lands. The side project takes off. You\'re running 5Ks before sunrise. The money you used to spend on rounds is now in an ISA.',
+      accent: '#50C878',
+    },
+    {
+      phase: 'THE LIFE',
+      title: '1 Year — Unrecognisable',
+      desc: 'Corner office. Dream car on the drive. Holiday villa booked. You didn\'t just quit drinking — you became the man you always knew you could be.',
+      accent: '#D4AF37',
+    },
+  ]
+
+  return (
+    <section className="life-transformed" id="life-transformed">
+      <div className="life-transformed-inner">
+        <Reveal>
+          <span className="section-eyebrow">THE JOURNEY</span>
+          <h2 className="section-heading" style={{ textAlign: 'center' }}>
+            Your life, <span className="text-gradient">transformed.</span>
+          </h2>
+          <p className="section-sub" style={{ textAlign: 'center', maxWidth: 600, margin: '0 auto' }}>
+            Giving up alcohol doesn't just remove a habit — it rewrites your entire future. Here's what the next 12 months look like.
+          </p>
+        </Reveal>
+
+        <div className="life-timeline">
+          {stages.map((s, i) => (
+            <Reveal key={i} delay={i * 120}>
+              <div className="life-stage">
+                <div className="life-stage-marker" style={{ background: s.accent }} />
+                <div className="life-stage-line" />
+                <div className="life-stage-content">
+                  <span className="life-stage-phase" style={{ color: s.accent }}>{s.phase}</span>
+                  <h3 className="life-stage-title">{s.title}</h3>
+                  <p className="life-stage-desc">{s.desc}</p>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+
+        <Reveal delay={600}>
+          <div className="life-transformed-video-placeholder">
+            <div className="life-transformed-video-text">
+              <span className="section-eyebrow">COMING SOON</span>
+              <p>Watch the full cinematic transformation — from rock bottom to dream life.</p>
+            </div>
+          </div>
+        </Reveal>
+
+        <Reveal delay={700}>
+          <div style={{ textAlign: 'center', marginTop: 'var(--space-xl)' }}>
+            <a href="#waitlist" className="btn btn-primary btn-lg">Start Your Transformation</a>
+          </div>
+        </Reveal>
       </div>
     </section>
   )
@@ -393,6 +491,7 @@ export default function Home() {
           </h2>
         </div>
       </section>
+      <LifeTransformed />
       <Waitlist />
     </>
   )
