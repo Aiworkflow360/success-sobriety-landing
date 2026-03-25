@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Nav, Footer } from '../components/shared'
 
 export default function Terms() {
   useEffect(() => {
@@ -10,7 +9,6 @@ export default function Terms() {
 
   return (
     <>
-    <Nav />
     <main className="legal-page">
       <div className="legal-inner">
         <Link to="/" className="legal-back">
@@ -165,7 +163,6 @@ export default function Terms() {
         </section>
       </div>
     </main>
-    <Footer />
     </>
   )
 }

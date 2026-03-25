@@ -1,9 +1,12 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   useScrollY, useInView, useCountUp,
   Reveal, GlassCard, GradientMesh, Waitlist, CtaStrip,
 } from '../components/shared'
+import SobrietyQuiz from '../components/SobrietyQuiz'
+import SavingsCalculator from '../components/SavingsCalculator'
+import PlaybookSection from '../components/PlaybookSection'
 
 import phoneHero from '../assets/phone-hero.jpg'
 import silhouetteMan from '../assets/silhouette-man.jpg'
@@ -346,6 +349,9 @@ function Testimonials() {
           <h2 className="section-heading" style={{ textAlign: 'center' }}>
             Built with men <span className="text-gradient">like you.</span>
           </h2>
+          <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.35)', fontSize: '0.8rem', letterSpacing: '0.05em', marginTop: '0.5rem' }}>
+            Based on early tester feedback. Names and images are illustrative.
+          </p>
         </Reveal>
 
         <div className="testimonials-grid">
@@ -468,11 +474,19 @@ function LifeTransformed() {
 
 export default function Home() {
   useEffect(() => { document.title = 'Success & Sobriety — Perform at Your Peak' }, [])
+  const [quizData, setQuizData] = useState(null)
+
+  const handleQuizComplete = (data) => {
+    setQuizData(data)
+  }
 
   return (
     <>
       <Hero />
+      <SobrietyQuiz onComplete={handleQuizComplete} />
+      <SavingsCalculator compact initialSpend={quizData?.weeklySpend} />
       <SocialProof />
+      <PlaybookSection expanded highlightScenarios={quizData?.triggers} />
       <AppShowcase />
       <Features />
       <Transformation />

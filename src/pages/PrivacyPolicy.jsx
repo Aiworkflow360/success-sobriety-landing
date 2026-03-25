@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Nav, Footer } from '../components/shared'
 
 export default function PrivacyPolicy() {
   useEffect(() => {
@@ -10,7 +9,6 @@ export default function PrivacyPolicy() {
 
   return (
     <>
-    <Nav />
     <main className="legal-page">
       <div className="legal-inner">
         <Link to="/" className="legal-back">
@@ -158,7 +156,6 @@ export default function PrivacyPolicy() {
         </section>
       </div>
     </main>
-    <Footer />
     </>
   )
 }
